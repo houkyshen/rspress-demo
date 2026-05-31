@@ -1,1 +1,8 @@
-["Python核心语法","Python装饰器","mdx测试","uv工程使用案例","Python现代化开发"]
+[
+    "Python核心语法",
+    "Python装饰器",
+    "mdx测试",
+    "uv工程使用案例",
+    "Python现代化开发",
+    "从pip到uv：Python项目依赖管理的前世今生"
+]

@@ -1,1 +1,11 @@
-["introduction", "getting-started", "Python和Java的区别(1)基础语法", "Python学习笔记", "uv使用教程", "GitHub添加SSH Key", "ffmpeg-installation-windows11","AI视频转文字环境配置教程","VideoToText配置教程"]
+[
+    "introduction",
+    "getting-started",
+    "Python和Java的区别(1)基础语法",
+    "Python学习笔记",
+    "uv常用命令",
+    "GitHub添加SSH Key",
+    "ffmpeg-installation-windows11",
+    "AI视频转文字环境配置教程",
+    "VideoToText配置教程"
+]

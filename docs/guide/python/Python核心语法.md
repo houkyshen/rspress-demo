@@ -1049,7 +1049,7 @@ words.sort()
 print(words)  # 输出: ['apple', 'banana', 'cherry']
 ```
 
-#### reverse() - 反向
+#### reverse() - 反转列表
 
 ```python
 numbers = [1, 2, 3, 4, 5]

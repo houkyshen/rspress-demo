@@ -10,7 +10,27 @@
 ## setting文件
 直接复制以下内容到setting.json中：
 ```json
-
+    // ***自定义配置***
+    "editor.mouseWheelZoom": true, // 开启鼠标滚轮缩放编辑器字体
+    // pasteImage插件配置，方便写markdown文件
+    "pasteImage.path": "${currentFileDir}/images", // 图片保存到当前文件目录下的images文件夹
+    "pasteImage.namePrefix": "${currentFileNameWithoutExt}-", // 图片名前缀 = 当前文件名（无后缀）
+    "pasteImage.basePath": "${currentFileDir}", // 图片基础路径 = 当前文件所在目录
+    "pasteImage.showFilePathConfirmInputBox": false, // 粘贴图片时不弹出路径确认框
+    // 文件自动保存
+    "files.autoSave": "afterDelay", // 延迟自动保存
+    // 自动识别文件编码，避免乱码
+    "files.autoGuessEncoding": true,
+    // 粘贴时自动格式化代码
+    "editor.formatOnPaste": true,
+    // 保存时自动格式化
+    "editor.formatOnSave": true,
+    // 输入时自动格式化
+    "editor.formatOnType": true,
+    // 差异编辑器开启自动换行
+    "diffEditor.wordWrap": "on",
+    // Git 同步操作不弹出确认框
+    "git.confirmSync": false,
 ```
 
 ## 默认终端配置

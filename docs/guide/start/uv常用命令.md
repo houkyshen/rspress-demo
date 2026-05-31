@@ -19,7 +19,7 @@ uv init my-project      # 创建新项目
 cd my-project           # 进入项目目录
 ```
 
-## 依赖管理
+## 依赖管理（使用uv run python main.py无需激活虚拟环境)
 
 ```bash
 uv add requests         # 添加依赖

@@ -1,0 +1,22 @@
+[
+  {
+    "type": "dir-section-header",
+    "name": "start",
+    "label": "Getting Started"
+  },
+  {
+    "type": "dir-section-header",
+    "name": "python",
+    "label": "Python"
+  },
+  {
+    "type": "dir-section-header",
+    "name": "use-mdx",
+    "label": "Markdown & MDX"
+  },
+  {
+    "type": "dir-section-header",
+    "name": "github",
+    "label": "Github"
+  }
+]

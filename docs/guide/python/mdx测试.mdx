@@ -1,0 +1,79 @@
+# MDX 测试
+## 左右代码并排示例
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '16px',
+  width: '100%',
+  margin: '20px 0'
+}}>
+
+{/* 左侧代码 */}
+<div style={{
+  border: '1px solid #e5e7eb',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  background: '#fff'
+}}>
+<div style={{
+  background: '#f6f8fa',
+  padding: '8px 12px',
+  borderBottom: '1px solid #e5e7eb',
+  fontSize: '14px',
+  fontWeight: 600
+}}>
+左侧：模板代码
+</div>
+
+```python
+# 定义类
+class 类名:
+    def __init__(self, 形参列表):
+        self.属性名 = 参数值
+        self.属性名 = 参数值
+
+    def 方法名(self, 形参列表):
+        pass
+
+# 创建对象
+对象名 = 类名(参数列表)
+对象名.方法名(实参)
+```
+
+</div>
+
+{/* 右侧代码 */}
+<div style={{
+  border: '1px solid #e5e7eb',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  background: '#fff'
+}}>
+<div style={{
+  background: '#f6f8fa',
+  padding: '8px 12px',
+  borderBottom: '1px solid #e5e7eb',
+  fontSize: '14px',
+  fontWeight: 600
+}}>
+右侧：实际示例
+</div>
+
+```python
+class Car:
+    def __init__(self, brand, name, price):
+        self.brand = brand
+        self.name = name
+        self.price = price
+
+    def running(self):
+        print(f"{self.brand} {self.name} 正在行驶")
+
+c1 = Car("BMW", "X5", 500000)
+c1.running()
+```
+
+</div>
+
+</div>

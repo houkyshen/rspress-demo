@@ -1004,11 +1004,11 @@ print(fruits)  # 输出: ['苹果', '香蕉', '橙子']
 
 ```python
 fruits = ["苹果", "香蕉", "橙子"]
-fruits.insert(1, "梨")
-print(fruits)  # 输出: ['苹果', '梨', '香蕉', '橙子']
+fruits.insert(1, "石榴")
+print(fruits)  # 输出: ['苹果', '石榴', '香蕉', '橙子']
 ```
 
-#### remove() - 移除第一个匹配值
+#### remove() - 删除指定元素
 
 ```python
 fruits = ["苹果", "香蕉", "香蕉", "橙子"]
@@ -1016,17 +1016,17 @@ fruits.remove("香蕉")
 print(fruits)  # 输出: ['苹果', '香蕉', '橙子']
 ```
 
-#### pop() - 按索引删除（默认删除最后一个）
+#### pop() - 删除指定位置元素
 
 ```python
 fruits = ["苹果", "香蕉", "橙子"]
 
-# 删除最后一个
+# 删除最后一个元素
 last = fruits.pop()
 print(last)  # 输出: 橙子
 print(fruits)  # 输出: ['苹果', '香蕉']
 
-# 删除指定位置
+# 删除指定位置元素
 first = fruits.pop(0)
 print(first)  # 输出: 苹果
 print(fruits)  # 输出: ['香蕉']
@@ -1039,7 +1039,7 @@ numbers = [3, 1, 4, 1, 5, 9, 2, 6]
 numbers.sort()
 print(numbers)  # 输出: [1, 1, 2, 3, 4, 5, 6, 9]
 
-# 反向排序
+# 逆序排序
 numbers.sort(reverse=True)
 print(numbers)  # 输出: [9, 6, 5, 4, 3, 2, 1, 1]
 
@@ -1049,7 +1049,7 @@ words.sort()
 print(words)  # 输出: ['apple', 'banana', 'cherry']
 ```
 
-#### reverse() - 反转
+#### reverse() - 反向
 
 ```python
 numbers = [1, 2, 3, 4, 5]
@@ -1057,12 +1057,12 @@ numbers.reverse()
 print(numbers)  # 输出: [5, 4, 3, 2, 1]
 ```
 
-#### index() - 查找索引
+#### index() - 查找首次出现的位置
 
 ```python
 fruits = ["苹果", "香蕉", "橙子"]
 print(fruits.index("香蕉"))  # 输出: 1
-# print(fruits.index("葡萄"))  # ✗ ValueError
+# print(fruits.index("榴莲"))  # ✗ ValueError
 ```
 
 #### clear() - 清空列表
@@ -1073,7 +1073,7 @@ fruits.clear()
 print(fruits)  # 输出: []
 ```
 
-### 6）列表合并与成员判断
+### 6）列表合并与复制
 
 #### 合并 - 使用 `+`
 
@@ -1085,7 +1085,7 @@ result = list1 + list2
 print(result)  # 输出: [1, 2, 3, 4, 5, 6]
 ```
 
-#### 重复 - 使用 `*`
+#### 复制 - 使用 `*`
 
 ```python
 list1 = [1, 2]
@@ -1093,17 +1093,19 @@ result = list1 * 3
 print(result)  # 输出: [1, 2, 1, 2, 1, 2]
 ```
 
-#### 成员判断 - 使用 `in` 和 `not in`
+### 7）列表成员检查
+
+#### in 和 not in
 
 ```python
 fruits = ["苹果", "香蕉", "橙子"]
 
 print("香蕉" in fruits)  # 输出: True
-print("葡萄" in fruits)  # 输出: False
-print("葡萄" not in fruits)  # 输出: True
+print("榴莲" in fruits)  # 输出: False
+print("榴莲" not in fruits)  # 输出: True
 ```
 
-### 7）数据统计
+### 8）列表常用函数
 
 ```python
 numbers = [3, 1, 4, 1, 5, 9, 2, 6]
@@ -1117,10 +1119,10 @@ print(max(numbers))  # 输出: 9
 # sum() - 求和
 print(sum(numbers))  # 输出: 31
 
-# len() - 元素个数
+# len() - 长度
 print(len(numbers))  # 输出: 8
 
-# count() - 统计某个元素出现的次数
+# count() - 统计出现次数
 print(numbers.count(1))  # 输出: 2
 ```
 
@@ -1128,44 +1130,41 @@ print(numbers.count(1))  # 输出: 2
 
 ## 五、元组
 
-### 1）元组介绍
+### 1）元组定义与特点
 
-元组是不可变序列，类似列表，但创建后不能修改。
-
-#### 特点
-- 有序：元素按顺序存储
-- 不可重复：可包含重复元素
-- 不可修改：创建后不能增删改元素
-- 用于存储固定数据
+元组是一种有序、不可修改的数据集合。特点包括：
+- 有序：元素按顺序存储，可通过索引访问
+- 不可修改：创建后无法改变
+- 可重复：可包含重复元素
 
 ```python
-# 不可变性演示
+# 定义元组
 tuple1 = (1, 2, 3)
 # tuple1[0] = 10  # ✗ 错误，元组不可修改
 print(tuple1)  # 输出: (1, 2, 3)
 
-# 可存不同类型
+# 可包含不同类型
 tuple2 = (1, "Hello", 3.14, True, None)
 print(tuple2)  # 输出: (1, 'Hello', 3.14, True, None)
 ```
 
-### 2）元组定义
+### 2）元组创建
 
 ```python
-# 带圆括号
+# 方式1：带括号
 tuple1 = (1, 2, 3)
 print(tuple1)  # 输出: (1, 2, 3)
 
-# 不带圆括号（也是元组）
+# 方式2：不带括号（逗号是关键）
 tuple2 = 1, 2, 3
 print(tuple2)  # 输出: (1, 2, 3)
 
-# 单元素元组（必须带逗号）
+# 方式3：单元素元组（必须有逗号）
 tuple3 = (5,)
 print(tuple3)  # 输出: (5,)
 print(type(tuple3))  # 输出: <class 'tuple'>
 
-# 空元组
+# 方式4：空元组
 empty1 = ()
 empty2 = tuple()
 print(empty1, empty2)  # 输出: () ()
@@ -1187,56 +1186,37 @@ print(t[::2])  # 输出: ('苹果', '橙子')
 
 ### 4）元组常用方法
 
-#### count() - 统计元素出现次数
+#### count() - 统计出现次数
 
 ```python
 t = (1, 2, 2, 3, 2, 4)
 print(t.count(2))  # 输出: 3
 ```
 
-#### index() - 查找首次出现的索引
+#### index() - 查找首次出现的位置
 
 ```python
 t = ("苹果", "香蕉", "橙子", "香蕉")
-print(t.index("香蕉"))  # 输出: 1（首次出现的位置）
+print(t.index("香蕉"))  # 输出: 1（返回首次出现的索引）
 ```
 
-### 5）组包与解包
+### 5）元组拆包
 
-#### 组包 - 将多个值合并到一个元组
-
-```python
-# 显式组包
-tuple1 = (1, 2, 3)
-
-# 隐式组包
-tuple2 = 1, 2, 3
-print(tuple2)  # 输出: (1, 2, 3)
-
-# 函数返回多个值（实际是组包）
-def get_info():
-    return "Alice", 25, "Engineer"
-
-result = get_info()
-print(result)  # 输出: ('Alice', 25, 'Engineer')
-```
-
-#### 解包 - 将元组拆成独立变量
+#### 基本拆包
 
 ```python
-# 基本解包
 t = (1, 2, 3)
 a, b, c = t
 print(a, b, c)  # 输出: 1 2 3
 
-# 使用 * 收集剩余元素
+# 使用 * 匹配多个元素
 t = (1, 2, 3, 4, 5)
 a, *middle, c = t
 print(a)  # 输出: 1
 print(middle)  # 输出: [2, 3, 4]
 print(c)  # 输出: 5
 
-# 交换变量值
+# 交换两个值
 x, y = 10, 20
 x, y = y, x
 print(x, y)  # 输出: 20 10
@@ -1246,62 +1226,50 @@ print(x, y)  # 输出: 20 10
 
 ## 六、字典
 
-### 1）字典介绍
+### 1）字典定义与特点
 
-字典是键值对（key:value）的存储结构。
-
-#### 特点
-- 使用键值对存储数据
-- 键（key）不可重复，但可修改
-- 无序性（Python 3.7+ 按插入顺序）
-- 可修改
+字典是一种无序的键值对集合。特点包括：
+- 使用 key:value 形式存储
+- 无序（Python 3.7+ 保持插入顺序）
+- 可修改：可增删改元素
+- key 必须唯一
 
 ```python
-# 基本字典
-person = {"name": "小王", "age": 18, "city": "北京"}
-print(person)  # 输出: {'name': '小王', 'age': 18, 'city': '北京'}
+# 定义字典
+person = {"name": "Alice", "age": 25, "city": "Beijing"}
+print(person)  # 输出: {'name': 'Alice', 'age': 25, 'city': 'Beijing'}
 
-# 键不可重复
-d = {"a": 1, "a": 2}
-print(d)  # 输出: {'a': 2}（后面的值覆盖前面的）
-```
-
-### 2）字典定义
-
-```python
-# 使用花括号
-dict1 = {"name": "Alice", "age": 25}
-print(dict1)  # 输出: {'name': 'Alice', 'age': 25}
+# 包含不同类型
+dict1 = {"a": 1, "a": 2}
+print(dict1)  # 输出: {'a': 2}（后面的值覆盖前面的）
 
 # 空字典
 empty1 = {}
 empty2 = dict()
 print(empty1, empty2)  # 输出: {} {}
 
-# 从列表创建
+# 从列表创建字典
 pairs = [("a", 1), ("b", 2), ("c", 3)]
 dict2 = dict(pairs)
 print(dict2)  # 输出: {'a': 1, 'b': 2, 'c': 3}
 ```
 
-### 3）字典取值
+### 2）字典访问
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
 
-# 方法1：使用中括号（键不存在会报错）
+# 方式1：直接访问（可能报错）
 print(person["name"])  # 输出: Alice
 # print(person["country"])  # ✗ KeyError
 
-# 方法2：使用 get() 方法（键不存在返回 None）
+# 方式2：get()方法（安全）
 print(person.get("name"))  # 输出: Alice
 print(person.get("country"))  # 输出: None
 print(person.get("country", "Unknown"))  # 输出: Unknown（提供默认值）
 ```
 
-### 4）字典增删改查
-
-#### 增加 - 新键赋值
+### 3）字典修改
 
 ```python
 person = {"name": "Alice"}
@@ -1309,15 +1277,9 @@ person["age"] = 25
 print(person)  # 输出: {'name': 'Alice', 'age': 25}
 ```
 
-#### 修改 - 已存在键赋值
+### 4）字典删除
 
-```python
-person = {"name": "Alice", "age": 25}
-person["age"] = 30
-print(person)  # 输出: {'name': 'Alice', 'age': 30}
-```
-
-#### 删除 - 使用 `pop()` 或 `del`
+#### pop() - 删除并返回值
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
@@ -1332,9 +1294,9 @@ del person["city"]
 print(person)  # 输出: {'name': 'Alice'}
 ```
 
-#### 查询操作
+### 5）字典遍历
 
-##### keys() - 获取所有键
+#### keys() - 获取所有键
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
@@ -1343,7 +1305,7 @@ print(keys)  # 输出: dict_keys(['name', 'age', 'city'])
 print(list(keys))  # 输出: ['name', 'age', 'city']
 ```
 
-##### values() - 获取所有值
+#### values() - 获取所有值
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
@@ -1352,14 +1314,14 @@ print(values)  # 输出: dict_values(['Alice', 25, 'Beijing'])
 print(list(values))  # 输出: ['Alice', 25, 'Beijing']
 ```
 
-##### items() - 获取所有键值对
+#### items() - 获取所有键值对
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
 items = person.items()
 print(items)  # 输出: dict_items([('name', 'Alice'), ('age', 25), ('city', 'Beijing')])
 
-# 遍历键值对
+# 遍历字典
 for key, value in person.items():
     print(f"{key}: {value}")
 
@@ -1369,7 +1331,7 @@ for key, value in person.items():
 # city: Beijing
 ```
 
-##### 遍历字典
+#### 遍历字典
 
 ```python
 person = {"name": "Alice", "age": 25, "city": "Beijing"}
@@ -1397,44 +1359,29 @@ for key, value in person.items():
 
 ## 七、集合
 
-### 1）集合介绍
+### 1）集合定义与特点
 
-集合是无序、不可重复的容器。
-
-#### 特点
-- 无序性：元素没有顺序
-- 不可重复：自动去重
+集合是一种无序、不重复的数据集合。特点包括：
+- 无序：元素没有顺序
+- 不重复：自动去重
 - 可修改：可增删元素
-- 用于去重和成员判断
 
 ```python
 # 定义集合
 s = {"apple", "banana", "orange"}
-print(s)  # 输出: {'apple', 'banana', 'orange'}（顺序可能不同）
+print(s)  # 输出: {'apple', 'banana', 'orange'}（顺序不固定）
 
 # 自动去重
 s = {"a", "b", "a", "c", "b"}
 print(s)  # 输出: {'a', 'b', 'c'}
-```
 
-### 2）集合定义
-
-```python
-# 使用花括号
-set1 = {"C", "D", "X", "T", "O", "U"}
-print(set1)  # 输出: {'C', 'D', 'X', 'T', 'O', 'U'}（顺序可能不同）
-
-# 从列表创建
-set2 = set([1, 2, 2, 3, 3, 4])
-print(set2)  # 输出: {1, 2, 3, 4}
-
-# 空集合（必须用 set()，不能用 {}）
+# 空集合必须用 set()
 empty = set()
 print(empty)  # 输出: set()
 print(type(empty))  # 输出: <class 'set'>
 ```
 
-### 3）集合常用方法
+### 2）集合常用操作
 
 #### add() - 添加元素
 
@@ -1443,40 +1390,40 @@ s = {1, 2, 3}
 s.add(4)
 print(s)  # 输出: {1, 2, 3, 4}
 
-# 添加重复元素不会改变集合
+# 添加已存在元素（不重复）
 s.add(2)
 print(s)  # 输出: {1, 2, 3, 4}
 ```
 
-#### remove() - 移除指定元素
+#### remove() - 删除指定元素
 
 ```python
 s = {1, 2, 3, 4}
 s.remove(2)
 print(s)  # 输出: {1, 3, 4}
 
-# 移除不存在的元素报错
+# 删除不存在元素会报错
 # s.remove(5)  # ✗ KeyError
 ```
 
-#### discard() - 移除指定元素（不存在不报错）
+#### discard() - 删除指定元素（不报错）
 
 ```python
 s = {1, 2, 3, 4}
 s.discard(2)
 print(s)  # 输出: {1, 3, 4}
 
-# 移除不存在的元素不报错
+# 删除不存在元素不会报错
 s.discard(5)
 print(s)  # 输出: {1, 3, 4}
 ```
 
-#### pop() - 随机删除并返回一个元素
+#### pop() - 删除任意元素
 
 ```python
 s = {1, 2, 3, 4}
 element = s.pop()
-print(element)  # 输出: 某个元素（随机）
+print(element)  # 输出: 随机删除的元素
 print(s)  # 输出: 剩余元素
 ```
 
@@ -1488,9 +1435,9 @@ s.clear()
 print(s)  # 输出: set()
 ```
 
-#### 集合运算
+### 3）集合运算
 
-##### union() - 并集
+#### union() - 并集
 
 ```python
 s1 = {1, 2, 3}
@@ -1504,7 +1451,7 @@ result = s1 | s2
 print(result)  # 输出: {1, 2, 3, 4, 5}
 ```
 
-##### intersection() - 交集
+#### intersection() - 交集
 
 ```python
 s1 = {1, 2, 3}
@@ -1518,7 +1465,7 @@ result = s1 & s2
 print(result)  # 输出: {3}
 ```
 
-##### difference() - 差集
+#### difference() - 差集
 
 ```python
 s1 = {1, 2, 3}
@@ -1534,240 +1481,232 @@ print(result)  # 输出: {1, 2}
 
 ---
 
-## 八、数据容器对比
-
-| 特性     | 字符串   | 列表       | 元组     | 集合   | 字典       |
-| -------- | -------- | ---------- | -------- | ------ | ---------- |
-| 有序性   | 有序     | 有序       | 有序     | 无序   | 有序(3.7+) |
-| 允许重复 | 允许     | 允许       | 允许     | 不允许 | key不允许  |
-| 可变性   | 不可变   | 可变       | 不可变   | 可变   | 可变       |
-| 索引访问 | 支持     | 支持       | 支持     | 不支持 | 不支持     |
-| 切片操作 | 支持     | 支持       | 支持     | 不支持 | 不支持     |
-| 场景     | 文本处理 | 有序可重复 | 固定数据 | 去重   | 键值对     |
-
----
-
-## 九、函数
+## 八、函数
 
 ### 1）函数定义与调用
 
-#### 定义函数
+#### 基本格式
 
 ```python
 def 函数名(参数):
-    """函数说明文档"""
+    """函数说明"""
     # 函数体
     return 返回值
 ```
 
-#### 简单示例
+#### 简单函数示例
 
 ```python
 # 定义函数
 def greet(name):
-    """向用户问好"""
-    message = f"你好，{name}!"
+    """定义一个问候函数"""
+    message = f"你好，{name}！"
     return message
 
 # 调用函数
 result = greet("Alice")
-print(result)  # 输出: 你好，Alice!
+print(result)  # 输出: 你好，Alice！
 ```
 
-#### 多种函数形式
+### 2）函数参数
 
-```python
-# 无参数无返回值
-def say_hello():
-    print("Hello!")
-
-say_hello()  # 输出: Hello!
-
-# 有参数无返回值
-def print_info(name):
-    print(f"名字: {name}")
-
-print_info("Bob")  # 输出: 名字: Bob
-
-# 无参数有返回值
-def get_current_year():
-    return 2024
-
-year = get_current_year()
-print(year)  # 输出: 2024
-
-# 有参数有返回值
-def add(a, b):
-    return a + b
-
-sum_result = add(5, 3)
-print(sum_result)  # 输出: 8
-```
-
-#### 注意事项
-- 必须先定义后调用
-- 定义函数不会执行，调用时才执行
-- 缩进表示代码层级
-
-### 2）参数类型
-
-#### 位置参数
+#### 必需参数
 
 ```python
 def print_info(name, age):
     print(f"名字: {name}, 年龄: {age}")
 
-# 顺序必须一致
+# 位置必须匹配
 print_info("Alice", 25)  # 输出: 名字: Alice, 年龄: 25
-# print_info(25, "Alice")  # ✗ 结果不对
-```
-
-#### 关键字参数
-
-```python
-def print_info(name, age):
-    print(f"名字: {name}, 年龄: {age}")
-
-# 使用关键字参数，顺序不限
-print_info(age=30, name="Bob")  # 输出: 名字: Bob, 年龄: 30
-print_info(name="Charlie", age=35)  # 输出: 名字: Charlie, 年龄: 35
+# print_info(25, "Alice")  # ✗ 错误顺序
 ```
 
 #### 默认参数
 
 ```python
 def print_info(name, age=18):
-    """age 的默认值是 18"""
+    """age 的默认值为 18"""
     print(f"名字: {name}, 年龄: {age}")
 
 print_info("Alice")  # 输出: 名字: Alice, 年龄: 18
 print_info("Bob", 25)  # 输出: 名字: Bob, 年龄: 25
 
-# 默认参数必须在参数列表后面
+# 必须先指定有默认值的参数
 # def wrong_func(age=18, name):  # ✗ 错误
 #     pass
 ```
 
-#### 混合使用
+#### 关键字参数
 
 ```python
 def print_info(name, age=18, city="Unknown"):
     print(f"名字: {name}, 年龄: {age}, 城市: {city}")
 
-# 位置参数在前，关键字参数在后
+# 可不按顺序指定参数
 print_info("Alice")  # 输出: 名字: Alice, 年龄: 18, 城市: Unknown
 print_info("Bob", 25)  # 输出: 名字: Bob, 年龄: 25, 城市: Unknown
 print_info("Charlie", 30, "Beijing")  # 输出: 名字: Charlie, 年龄: 30, 城市: Beijing
 print_info("David", age=28, city="Shanghai")  # 输出: 名字: David, 年龄: 28, 城市: Shanghai
 ```
 
-### 3）变量作用域
+### 3）不定长参数
 
-#### 局部变量和全局变量
+#### *args - 接收任意个位置参数
 
 ```python
-# 全局变量
-global_var = 100
+# *args 接收任意个位置参数（打包成元组）
+def sum_numbers(*args):
+    """计算任意个数字的和"""
+    total = 0
+    for num in args:
+        total += num
+    return total
 
-def func():
-    # 局部变量
-    local_var = 50
-    print(local_var)  # 输出: 50
-    print(global_var)  # 输出: 100（可以访问全局变量）
+print(sum_numbers(1, 2, 3))  # 输出: 6
+print(sum_numbers(1, 2, 3, 4, 5))  # 输出: 15
+print(sum_numbers(10))  # 输出: 10
 
-func()
+# 与其他参数混合使用
+def print_items(title, *items):
+    print(f"{title}:")
+    for item in items:
+        print(f"  - {item}")
 
-print(global_var)  # 输出: 100
-# print(local_var)  # ✗ NameError: name 'local_var' is not defined
+print_items("水果", "苹果", "香蕉", "橙子")
+# 输出:
+# 水果:
+#   - 苹果
+#   - 香蕉
+#   - 橙子
 ```
 
-#### global 关键字 - 在函数内修改全局变量
+#### **kwargs - 接收任意个关键字参数
 
 ```python
-counter = 0
+# **kwargs 接收任意个关键字参数（打包成字典）
+def print_person(**kwargs):
+    """打印个人信息"""
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
 
-def increment():
-    global counter
-    counter += 1
+print_person(name="Alice", age=25, city="Beijing")
+# 输出:
+# name: Alice
+# age: 25
+# city: Beijing
 
-increment()
-increment()
-print(counter)  # 输出: 2
+# 与其他参数混合使用
+def print_info(name, *args, **kwargs):
+    print(f"名字: {name}")
+    print(f"其他位置参数: {args}")
+    print(f"其他关键字参数: {kwargs}")
+
+print_info("Alice", 10, 20, 30, job="Engineer", salary=5000)
+# 输出:
+# 名字: Alice
+# 其他位置参数: (10, 20, 30)
+# 其他关键字参数: {'job': 'Engineer', 'salary': 5000}
 ```
 
-#### 注意事项
-- 尽量避免全局变量，会增加代码复杂度
-- 优先使用参数和返回值传递数据
-- `global` 通常用于状态、配置、计数器等
-
-### 4）多返回值
+#### 参数组合顺序
 
 ```python
-# 函数返回多个值（实际是返回元组）
+# 正确的顺序：位置参数 > *args > 默认参数 > **kwargs
+def func(a, b, *args, c=10, **kwargs):
+    print(f"a={a}, b={b}")
+    print(f"args={args}")
+    print(f"c={c}")
+    print(f"kwargs={kwargs}")
+
+func(1, 2, 3, 4, c=20, x=100, y=200)
+# 输出:
+# a=1, b=2
+# args=(3, 4)
+# c=20
+# kwargs={'x': 100, 'y': 200}
+```
+
+#### 解包参数
+
+```python
+# 使用 * 解包列表参数
+def add(a, b, c):
+    return a + b + c
+
+numbers = [1, 2, 3]
+print(add(*numbers))  # 输出: 6
+
+# 使用 ** 解包字典参数
+def greet(name, age):
+    print(f"{name} 今年 {age} 岁")
+
+info = {"name": "Alice", "age": 25}
+greet(**info)  # 输出: Alice 今年 25 岁
+```
+
+### 4）函数返回值
+
+#### 单个返回值
+
+```python
+def get_user_info():
+    return "Alice"
+
+name = get_user_info()
+print(name)  # 输出: Alice
+```
+
+#### 多个返回值
+
+```python
 def get_user_info():
     return "Alice", 25, "Engineer"
 
-# 接收返回值
+# 接收多个返回值
 name, age, job = get_user_info()
 print(name, age, job)  # 输出: Alice 25 Engineer
 
-# 或直接接收元组
+# 接收元组
 info = get_user_info()
 print(info)  # 输出: ('Alice', 25, 'Engineer')
 ```
 
-### 5）函数嵌套调用
+### 5）函数嵌套
 
-```python
-def add(a, b):
-    return a + b
-
-def multiply(a, b):
-    return a * b
-
-def calculate(x, y):
-    sum_result = add(x, y)
-    product_result = multiply(x, y)
-    return sum_result, product_result
-
-result = calculate(5, 3)
-print(result)  # 输出: (8, 15)
-```
-
-#### 调用栈（LIFO - 后进先出）
+#### 内部函数调用
 
 ```python
 def func_a():
-    print("A 开始")
+    print("A 执行开始")
     func_b()
-    print("A 结束")
+    print("A 执行结束")
 
 def func_b():
-    print("B 开始")
+    print("B 执行开始")
     func_c()
-    print("B 结束")
+    print("B 执行结束")
 
 def func_c():
-    print("C 开始")
-    print("C 结束")
+    print("C 执行开始")
+    print("C 执行结束")
 
 func_a()
 
 # 输出:
-# A 开始
-# B 开始
-# C 开始
-# C 结束
-# B 结束
-# A 结束
+# A 执行开始
+# B 执行开始
+# C 执行开始
+# C 执行结束
+# B 执行结束
+# A 执行结束
 ```
 
-### 6）函数说明文档（Docstring）
+### 6）函数文档字符串
 
 ```python
 def calculate_average(numbers):
     """
-    计算一组数字的平均值
+    计算数字列表的平均值
     
     参数:
         numbers (list): 数字列表
@@ -1783,26 +1722,500 @@ def calculate_average(numbers):
         return 0
     return sum(numbers) / len(numbers)
 
-# 查看函数文档
+# 查询函数说明
 help(calculate_average)
 
-# 在 IDE 中悬停可以看到文档
+# 在IDE或Python交互中查看文档
 result = calculate_average([10, 20, 30])
 print(result)  # 输出: 20.0
 ```
 
+### 7）函数作用域
+
+#### 全局变量和局部变量
+
+```python
+# 全局变量
+global_var = 100
+
+def func():
+    # 局部变量
+    local_var = 50
+    print(local_var)  # 输出: 50
+    print(global_var)  # 输出: 100（可访问全局变量）
+
+func()
+
+print(global_var)  # 输出: 100
+# print(local_var)  # ✗ NameError: name 'local_var' is not defined
+```
+
+#### global 关键字 - 修改全局变量
+
+```python
+counter = 0
+
+def increment():
+    global counter
+    counter += 1
+
+increment()
+increment()
+print(counter)  # 输出: 2
+```
+
 ---
 
-## 十、核心模块
+## 九、类与对象
 
-Python 学习的核心架构：
+### 1）类定义与对象创建
 
-- **数据存储与运算** → 基础语法（变量、运算符、类型转换）
-- **数据逻辑处理** → 流程控制（if、while、for）
-- **数据容器** → 字符串、列表、元组、集合、字典
-- **代码复用** → 函数（定义、参数、返回值）
-- **面向对象** → 类、继承、封装、多态
+#### 基本格式
+
+```python
+class 类名:
+    """类的说明"""
+    
+    def __init__(self, 参数):
+        # 初始化方法
+        pass
+    
+    def 方法名(self):
+        # 方法体
+        pass
+```
+
+#### 简单类示例
+
+```python
+class Person:
+    """定义一个人类"""
+    
+    def __init__(self, name, age):
+        # 初始化属性
+        self.name = name
+        self.age = age
+    
+    def greet(self):
+        """问候方法"""
+        return f"你好，我是{self.name}，今年{self.age}岁"
+
+# 创建对象
+p1 = Person("Alice", 25)
+p2 = Person("Bob", 30)
+
+# 访问属性
+print(p1.name)  # 输出: Alice
+print(p1.age)   # 输出: 25
+
+# 调用方法
+print(p1.greet())  # 输出: 你好，我是Alice，今年25岁
+print(p2.greet())  # 输出: 你好，我是Bob，今年30岁
+```
+
+### 2）类属性与实例属性
+
+```python
+class Student:
+    # 类属性（所有实例共享）
+    school = "北京一中"
+    student_count = 0
+    
+    def __init__(self, name, score):
+        # 实例属性（每个实例独有）
+        self.name = name
+        self.score = score
+        Student.student_count += 1
+    
+    def display(self):
+        print(f"{self.name} 在 {Student.school} 取得 {self.score} 分")
+
+s1 = Student("Alice", 95)
+s2 = Student("Bob", 87)
+
+s1.display()  # 输出: Alice 在 北京一中 取得 95 分
+s2.display()  # 输出: Bob 在 北京一中 取得 87 分
+
+print(Student.student_count)  # 输出: 2
+print(Student.school)  # 输出: 北京一中
+```
+
+### 3）方法
+
+#### 实例方法
+
+```python
+class Account:
+    def __init__(self, balance):
+        self.balance = balance
+    
+    def deposit(self, amount):
+        """存款"""
+        self.balance += amount
+        print(f"存入 {amount} 元，余额为 {self.balance} 元")
+    
+    def withdraw(self, amount):
+        """取款"""
+        if amount <= self.balance:
+            self.balance -= amount
+            print(f"取出 {amount} 元，余额为 {self.balance} 元")
+        else:
+            print("余额不足")
+
+acc = Account(1000)
+acc.deposit(500)      # 输出: 存入 500 元，余额为 1500 元
+acc.withdraw(200)     # 输出: 取出 200 元，余额为 1300 元
+acc.withdraw(5000)    # 输出: 余额不足
+```
+
+#### 类方法（@classmethod）
+
+```python
+class Counter:
+    count = 0
+    
+    def __init__(self):
+        Counter.count += 1
+    
+    @classmethod
+    def get_count(cls):
+        """获取计数器值"""
+        return cls.count
+
+c1 = Counter()
+c2 = Counter()
+c3 = Counter()
+
+print(Counter.get_count())  # 输出: 3
+```
+
+#### 静态方法（@staticmethod）
+
+```python
+class Math:
+    @staticmethod
+    def add(a, b):
+        """加法"""
+        return a + b
+    
+    @staticmethod
+    def multiply(a, b):
+        """乘法"""
+        return a * b
+
+print(Math.add(5, 3))      # 输出: 8
+print(Math.multiply(5, 3))  # 输出: 15
+```
+
+### 4）继承
+
+#### 基本继承
+
+```python
+# 父类
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def speak(self):
+        return f"{self.name} 发出声音"
+
+# 子类继承父类
+class Dog(Animal):
+    def speak(self):
+        """重写父类方法"""
+        return f"{self.name} 汪汪汪"
+
+class Cat(Animal):
+    def speak(self):
+        """重写父类方法"""
+        return f"{self.name} 喵喵喵"
+
+# 使用
+dog = Dog("旺财")
+cat = Cat("咪咪")
+
+print(dog.speak())  # 输出: 旺财 汪汪汪
+print(cat.speak())  # 输出: 咪咪 喵喵喵
+```
+
+#### 多继承
+
+```python
+# 第一个父类
+class Flyable:
+    def fly(self):
+        return "我会飞行"
+
+# 第二个父类
+class Swimmable:
+    def swim(self):
+        return "我会游泳"
+
+# 子类同时继承两个父类
+class Duck(Flyable, Swimmable):
+    def __init__(self, name):
+        self.name = name
+
+duck = Duck("唐老鸭")
+print(duck.fly())    # 输出: 我会飞行
+print(duck.swim())   # 输出: 我会游泳
+```
+
+#### super() 调用父类
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def speak(self):
+        return f"{self.name} 发出声音"
+
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)  # 调用父类的 __init__
+        self.breed = breed
+    
+    def speak(self):
+        # 调用父类的 speak 方法
+        parent_message = super().speak()
+        return f"{parent_message}（我是{self.breed}犬）"
+
+dog = Dog("旺财", "金毛")
+print(dog.speak())  # 输出: 旺财 发出声音（我是金毛犬）
+```
+
+### 5）封装
+
+#### 私有属性（以 _ 开头）
+
+```python
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self._balance = balance  # 私有属性（约定）
+    
+    def deposit(self, amount):
+        """存款"""
+        self._balance += amount
+    
+    def get_balance(self):
+        """获取余额"""
+        return self._balance
+
+acc = BankAccount("Alice", 1000)
+acc.deposit(500)
+print(acc.get_balance())  # 输出: 1500
+
+# 虽然可以访问，但约定不应该直接访问
+# print(acc._balance)  # 不推荐
+```
+
+#### 私有方法（以 __ 开头）
+
+```python
+class BankAccount:
+    def __init__(self, balance):
+        self._balance = balance
+    
+    def __validate_amount(self, amount):
+        """私有方法：验证金额"""
+        return amount > 0
+    
+    def withdraw(self, amount):
+        """取款"""
+        if self.__validate_amount(amount) and amount <= self._balance:
+            self._balance -= amount
+            return True
+        return False
+
+acc = BankAccount(1000)
+print(acc.withdraw(200))  # 输出: True
+# acc.__validate_amount(100)  # ✗ 错误，无法访问私有方法
+```
+
+#### 属性装饰器 (@property)
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self._age = age
+    
+    @property
+    def age(self):
+        """获取年龄"""
+        return self._age
+    
+    @age.setter
+    def age(self, value):
+        """设置年龄"""
+        if value > 0:
+            self._age = value
+        else:
+            print("年龄不能为负数")
+
+p = Person("Alice", 25)
+print(p.age)  # 输出: 25
+
+p.age = 30    # 使用 setter
+print(p.age)  # 输出: 30
+
+p.age = -5    # 输出: 年龄不能为负数
+```
+
+### 6）多态
+
+#### 方法重写与多态
+
+```python
+# 父类
+class Shape:
+    def area(self):
+        """计算面积"""
+        raise NotImplementedError("子类必须实现此方法")
+
+# 子类1
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+    
+    def area(self):
+        """圆形面积"""
+        import math
+        return math.pi * self.radius ** 2
+
+# 子类2
+class Square(Shape):
+    def __init__(self, side):
+        self.side = side
+    
+    def area(self):
+        """正方形面积"""
+        return self.side ** 2
+
+# 多态使用
+def print_area(shape):
+    """打印任意形状的面积"""
+    print(f"面积: {shape.area():.2f}")
+
+circle = Circle(5)
+square = Square(4)
+
+print_area(circle)  # 输出: 面积: 78.54
+print_area(square)  # 输出: 面积: 16.00
+```
+
+#### 鸭子类型（Duck Typing）
+
+```python
+class Dog:
+    def speak(self):
+        return "汪汪汪"
+
+class Cat:
+    def speak(self):
+        return "喵喵喵"
+
+class Bird:
+    def speak(self):
+        return "啾啾啾"
+
+# 不需要继承也可以使用相同的方法
+def make_sound(animal):
+    print(animal.speak())
+
+dog = Dog()
+cat = Cat()
+bird = Bird()
+
+make_sound(dog)    # 输出: 汪汪汪
+make_sound(cat)    # 输出: 喵喵喵
+make_sound(bird)   # 输出: 啾啾啾
+```
+
+### 7）特殊方法
+
+#### __str__ 和 __repr__
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def __str__(self):
+        """字符串表示"""
+        return f"Person: {self.name}, {self.age} 岁"
+    
+    def __repr__(self):
+        """官方表示"""
+        return f"Person('{self.name}', {self.age})"
+
+p = Person("Alice", 25)
+print(str(p))    # 输出: Person: Alice, 25 岁
+print(repr(p))   # 输出: Person('Alice', 25)
+```
+
+#### __len__ 和 __getitem__
+
+```python
+class MyList:
+    def __init__(self, items):
+        self.items = items
+    
+    def __len__(self):
+        """支持 len() 函数"""
+        return len(self.items)
+    
+    def __getitem__(self, index):
+        """支持索引访问"""
+        return self.items[index]
+
+ml = MyList([1, 2, 3, 4, 5])
+print(len(ml))      # 输出: 5
+print(ml[0])        # 输出: 1
+print(ml[2:4])      # 输出: [3, 4]
+```
+
+#### __add__ 和 __eq__
+
+```python
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __add__(self, other):
+        """支持 + 运算符"""
+        return Vector(self.x + other.x, self.y + other.y)
+    
+    def __eq__(self, other):
+        """支持 == 比较"""
+        return self.x == other.x and self.y == other.y
+    
+    def __str__(self):
+        return f"Vector({self.x}, {self.y})"
+
+v1 = Vector(1, 2)
+v2 = Vector(3, 4)
+v3 = v1 + v2
+
+print(v3)  # 输出: Vector(4, 6)
+print(v1 == v2)  # 输出: False
+print(v1 == Vector(1, 2))  # 输出: True
+```
 
 ---
 
-**提示**：熟练掌握这些基础知识是学习更高级特性的前提。建议通过实践和练习来巩固这些概念。
+Python 核心语法到此结束！
+
+**总结：**
+- **基础语法**：变量、类型、运算符
+- **流程控制**：if/elif/else、while、for、match/case
+- **数据结构**：字符串、列表、元组、字典、集合
+- **函数**：定义、参数、返回值、不定长参数
+- **面向对象**：类、继承、封装、多态
+
+这些是 Python 编程的基础，掌握好这些内容就能解决大部分编程问题！

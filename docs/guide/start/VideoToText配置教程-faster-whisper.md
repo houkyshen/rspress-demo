@@ -11,7 +11,7 @@ uv venv .venv --python 3.10.11
 .\.venv\Scripts\activate  # Windows
 uv init
 
-# 3. Install pytorch, 使用其中的cuda来加速音频转文字
+# 3. Install pytorch, 使用其中的cuda来加速音频转文字，注意：faster-whisper需要用到的ctranslate2要求cuda 12.0以上，所以需要安装12.0以上版本的cuda。
 # 在cmd跑下面命令安装118，用清华源下载 pytorch，比直接下载快很多。cu118 + Python 3.10.11终于成功！
 pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1+cu118 -i https://pypi.tuna.tsinghua.edu.cn/simple --extra-index-url https://download.pytorch.org/whl/cu118
 # uv配置了环境变量后，用以下命令下载，同样成功！

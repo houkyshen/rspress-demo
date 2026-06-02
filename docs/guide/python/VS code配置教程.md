@@ -37,7 +37,7 @@
 ```
 
 ## 默认终端配置
-![默认终端配置](image-34.png)
+![默认终端配置](./image-34.png)
 点击terminal的+号就可以配置，建议配置为cmd，因为powershell对虚拟环境的支持比较弱。
 
 ## 多版本Python

@@ -1,0 +1,32 @@
+[
+  {
+    "type": "file",
+    "name": "LangChain从入门到大师",
+    "label": "LangChain 从入门到大师"
+  },
+  {
+    "type": "file",
+    "name": "Claude Code与Open Code命令对比",
+    "label": "Claude Code vs OpenCode 命令对比"
+  },
+  {
+    "type": "file",
+    "name": "PydanticAI与其他AI框架的对比",
+    "label": "PydanticAI 与其他 AI 框架对比"
+  },
+  {
+    "type": "file",
+    "name": "vibe-coding经验1",
+    "label": "Vibe Coding 经验 1"
+  },
+  {
+    "type": "file",
+    "name": "vibe-coding经验2",
+    "label": "Vibe Coding 经验 2"
+  },
+  {
+    "type": "file",
+    "name": "vibe-coding注意事项",
+    "label": "Vibe Coding 注意事项"
+  }
+]

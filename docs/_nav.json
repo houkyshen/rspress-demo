@@ -2,7 +2,9 @@
   {
     "text": "Guide",
     "link": "/guide/python/Python核心语法",
-    "activeMatch": "/guide/"
+    "activeMatch": "/guide/",
+    "collapsible": true,
+    "collapsed": true
   },
   {
     "text": "API",

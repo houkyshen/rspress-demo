@@ -1,22 +1,32 @@
 [
   {
-    "type": "dir-section-header",
+    "type": "dir",
     "name": "start",
-    "label": "Getting Started"
+    "label": "Getting Started",
+    "collapsed": true
   },
   {
-    "type": "dir-section-header",
+    "type": "dir",
     "name": "python",
-    "label": "Python"
+    "label": "Python",
+    "collapsed": true
   },
   {
-    "type": "dir-section-header",
+    "type": "dir",
     "name": "use-mdx",
-    "label": "Markdown & MDX"
+    "label": "",
+    "collapsed": true
   },
   {
-    "type": "dir-section-header",
+    "type": "dir",
     "name": "github",
-    "label": "Github"
+    "label": "Github",
+    "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "AI",
+    "label": "AI Tools",
+    "collapsed": true
   }
 ]

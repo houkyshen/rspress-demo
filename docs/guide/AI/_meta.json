@@ -1,6 +1,11 @@
 [
   {
     "type": "file",
+    "name": "AI工程师的码力大陆",
+    "label": "AI工程师的码力大陆"
+  },
+  {
+    "type": "file",
     "name": "AI Agent工程师学习路线从入门到专家",
     "label": "AI Agent 工程师学习路线"
   },

@@ -484,7 +484,6 @@ Agent 陷入了**死循环**——不停地查天气，每分钟烧掉几十次 
 
 ```python
 # ✅ 第一步：神兵描述重铸 —— 从根上消除歧义
-# 🚨 阿里云百炼的 function calling 要求工具名是英文
 @tool("check_order_v2")
 def 查镖单_v2(order_id: str) -> str:
     """查询镖局系统中**已完成**的历史镖单记录。
@@ -498,7 +497,6 @@ def 发飞鸽_v2(courier: str, msg: str) -> str:
     每个任务最多调用一次，切勿重复发鸽骚扰镖师！"""
     ...
 
-神兵库_v2 = [查镖单_v2, 发飞鸽_v2]
 
 # ✅ 第二步：铁律定场诗（让Agent知进退）
 定场诗 = """你是龙门镖局调度师。谨记：
@@ -527,9 +525,32 @@ class 内视官(BaseCallbackHandler):
         if self.回合数 > 8:
             print(f"⚠️ 已过 {self.回合数} 回合，请核查是否陷入拉锯！")
 
+monitor = 内视官()
+
 # ✅ 第四步：限制最大回合 —— 调用时设置 recursion_limit
-# create_agent 中不设 max_iterations，而是通过 config 传参
-# result = agent.invoke({"messages": [...]}, config={"recursion_limit": 10})
+# create_agent 中不设 max_iterations，而是在 invoke 时通过 config 传参
+
+
+# 创建 Agent：注入定场诗 + 内视官监控 + 限制最多 5 步
+simple_agent = create_agent(
+    create_qwen_llm(temperature=0),
+    tools=[查天气_v2, 算里程_v2],
+    system_prompt=定场诗,
+)
+
+# 实际调用：config 中同时设置回调 + 递归限制
+result = simple_agent.invoke(
+    {"messages": [HumanMessage(content="从洛阳押镖到长安需要怎么准备？")]},
+    config={
+        "recursion_limit": 5,     # 最多 5 步，超过抛 RecursionError
+        "callbacks": [monitor],   # 内视官记录每一步
+    },
+)
+
+# 获取最终回答
+final_msg = result["messages"][-1]
+print(f"Agent: {final_msg.content}")
+print(f"回合数: {monitor.回合数}，工具调用: {dict(monitor.神兵出鞘录)}")
 ```
 
 ### 重新上线
@@ -558,7 +579,7 @@ class 内视官(BaseCallbackHandler):
 
 叶小舟接过来，令牌背面刻着一行小字：**"天下武功，唯调试不破。"**
 
-> **江湖笔记**：Agent 走火入魔四因——工具描述模糊、无限循环无上限、铁律不严、缺乏内视。四步救急：限制回合、重铸神兵描述、赋予定场诗、布内视大阵。
+> **江湖笔记**：Agent 走火入魔四因——工具描述模糊、无限循环无上限、铁律不严、缺乏内视。四步救急：重铸神兵描述、赋予定场诗、布内视大阵、限制回合。
 
 ---
 
@@ -753,8 +774,8 @@ set_llm_cache(SQLiteCache(database_path="机坊缓存.db"))
 # 第六式：护体神功（阿里云百炼 模型 Fallback）
 from langchain_openai import ChatOpenAI
 
-主将 = ChatOpenAI(model="qwen-flash", max_retries=0, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY"))
-替补 = ChatOpenAI(model="qwen-flash", max_retries=1, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY"))
+主将 = ChatOpenAI(model="qwen-flash", max_retries=0)
+替补 = ChatOpenAI(model="qwen-flash", max_retries=1)
 稳健宗师 = 主将.with_fallbacks([替补])
 ```
 

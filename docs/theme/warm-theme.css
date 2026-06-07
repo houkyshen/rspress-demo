@@ -1,0 +1,42 @@
+/* ========================================
+ * Warm Theme for Rspress
+ * Background: #fff7ee
+ * Three-state cycle: Light → Dark → Warm
+ * ======================================== */
+
+/* ---- Warm theme CSS variables ---- */
+html.rp-warm {
+  --rp-c-bg: #fff7ee;
+  --rp-c-bg-soft: #fef1e2;
+  --rp-c-bg-mute: #fde8d2;
+  --rp-c-bg-alt: #fffaf5;
+
+  /* Keep text colors readable on warm background */
+  --rp-c-text-0: #000;
+  --rp-c-text-1: #242424;
+  --rp-c-text-2: #000000b3;
+  --rp-c-text-3: #3c3c3c54;
+  --rp-c-text-4: #3c3c3c2e;
+
+  /* Soften code block background */
+  --rp-c-text-code-bg: #fde8d233;
+  --rp-c-text-code-border: #00000009;
+
+  /* Warm-toned divider */
+  --rp-c-divider: #d4a57440;
+  --rp-c-divider-light: #d4a5741f;
+}
+
+/* ---- SwitchAppearance icon in warm mode ---- */
+/* Tint the sun icon orange to indicate warm mode */
+html.rp-warm .rp-switch-appearance__icon--sun {
+  color: #e89b3c;
+}
+
+/* Warm mode: show sun icon even if some dark styles leak */
+html.rp-warm .rp-switch-appearance__icon--sun {
+  display: block !important;
+}
+html.rp-warm .rp-switch-appearance__icon--moon {
+  display: none !important;
+}

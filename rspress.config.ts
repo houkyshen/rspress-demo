@@ -18,4 +18,10 @@ export default defineConfig({
       },
     ],
   },
+  // Warm theme: global styles for CSS variable overrides
+  globalStyles: path.join(__dirname, 'docs/theme/warm-theme.css'),
+  // Warm theme: custom component that extends the appearance switch to 3 states
+  globalUIComponents: [
+    path.join(__dirname, 'docs/theme/AppearanceSwitch.tsx'),
+  ],
 });

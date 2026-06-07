@@ -24,7 +24,7 @@
 
 开源镇是江湖上最热闹的所在。镇上客栈里全是敲代码的散修，茶馆里谈论的都是"Agent 架构"、"RAG 管线"。叶小舟摸了摸怀里仅剩的三枚铜钱，走进了镇上最大的铁匠铺——LangChain 武备堂。
 
-"少侠，学功夫？"掌柜的掂了掂手里的烟杆，"咱们这有少林的 **OpenAI 心法**、武当的 **Claude 真传**、昆仑的**通义千问**、丐帮的**Deepseek**，你想修哪一门？"
+"少侠，学功夫？"掌柜的掂了掂手里的烟杆，"咱们这有 **DeepSeek 心法**、**通义千问**、**文心一言**——你想修哪一门？"
 
 叶小舟挠头："都……都想学？"
 
@@ -33,14 +33,14 @@
 ### 第一丝内力
 
 ```python
-# 叶小舟的入门第一式 —— 召唤宗师
-from langchain_community.chat_models.tongyi import ChatTongyi
+# 叶小舟的入門第一式 —— 召唤宗师
+from langchain_deepseek import ChatDeepSeek
 
-llm = ChatTongyi(
-    model="qwen-flash",  # 阿里云百炼 qwen-flash 模型
+llm = ChatDeepSeek(
+    model="deepseek-v4-pro",  # DeepSeek 最新旗舰模型
     temperature=0.7,          # 温度：越高越有创造力，越低越严谨
     max_tokens=256,           # 限制输出长度，10 秒内见分晓
-    # api_key 自动从环境变量 DASHSCOPE_API_KEY 读取，无需硬编码
+    # api_key 自动从环境变量 DEEPSEEK_API_KEY 读取，无需硬编码
 )
 
 # 聚气，发问！流式输出 —— 逐字显现，如内力流转
@@ -95,15 +95,15 @@ for chunk in llm.stream(formatted):
 第二天，他收到了一张账单。
 
 ```
-阿里云百炼 武备堂 敬启：
+DeepSeek 武备堂 敬启：
   昨日真气消耗：14,723,456 tokens
   折合银两：$87.34
   您的令牌余额不足，请及时充值。
 ```
 
-叶小舟差点把茶碗捏碎。他仔细查了一遍日志——**每个客人进来，系统都把整本入住手册从头到尾喂给了宗师（LLM）**。
+叶小舟差点把茶碗捏碎。他仔细查了一遍日志——**每个客人进来，系统都把整本入住手册从头到尾喂给了 LLM**。
 
-"你这叫 **真气（Token） 大出血**，"一个声音从背后传来。叶小舟回头，看见一个穿月白长裙的姑娘靠在门框上，手里转着一支判官笔。
+"你这叫 **Token 大出血**，"一个声音从背后传来。叶小舟回头，看见一个穿月白长裙的姑娘靠在门框上，手里转着一支判官笔。
 
 "每次对话都把全部历史重新送进去——这不叫对话，这叫**把整本史记压在一个七八岁小孩身上让他背**。"
 
@@ -113,11 +113,11 @@ for chunk in llm.stream(formatted):
 
 "什么兽？"
 
-"噬金兽。那不是真的兽——是**你不加节制地消耗真气（Token） 的习惯**。"苏灵儿敲了敲屏幕，"噬金兽分三头——"
+"噬金兽。那不是真的兽——是**你不加节制地消耗 Token 的习惯**。"苏灵儿敲了敲屏幕，"噬金兽分三头——"
 
 ### 噬金兽第一头：无节制全量上下文
 
-"你每次出招都把整段对话历史塞回去，"苏灵儿说，"一千轮对话就塞一千轮记忆。大模型上下文 1M 又怎样？真气（Token）不要钱啊？"
+"你每次出招都把整段对话历史塞回去，"苏灵儿说，"一千轮对话就塞一千轮记忆。大模型上下文 128K 又怎样？真气（Token）不要钱啊？"
 
 叶小舟翻出代码：
 
@@ -146,7 +146,7 @@ from langchain_core.messages import trim_messages
 # trim_messages 每次调用前裁剪历史，只保留最近的消息
 trimmed = trim_messages(
     messages,
-    max_tokens=10,           # 最多保留 10 条消息（因为用了len计数，所以这里的max_tokens指的是条数）
+    max_tokens=10,           # 最多保留 10 条消息
     token_counter=len,       # 按消息条数计数
     strategy="last",         # 保留最新的
     start_on="human",        # 确保以用户消息开头
@@ -170,7 +170,7 @@ if old_messages:
 # ✅ 策三：先算后出 —— 出招前计量
 import tiktoken
 
-# cl100k_base 是通用的编码器，适合做大语言模型的近似估算
+# cl100k_base 是 GPT-4 / DeepSeek 通用的编码器，适合做近似估算
 encoding = tiktoken.get_encoding("cl100k_base")
 token_count = sum(
     len(encoding.encode(m.get("content", ""))) for m in messages
@@ -218,12 +218,12 @@ set_llm_cache(SQLiteCache(database_path=".cache.db"))
 
 ```python
 # ✅ 护体神功 —— 故障自动转移
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_deepseek import ChatDeepSeek
 
-# 主将：Qwen-Flash，不重试，失败立刻交给替补
-主将 = ChatTongyi(model="qwen-flash", max_retries=0)
+# 主将：DeepSeek v4 Pro，不重试，失败立刻交给替补
+主将 = ChatDeepSeek(model="deepseek-v4-pro", max_retries=0)
 # 替补：轻量模型，成本和延迟更低
-替补 = ChatTongyi(model="qwen-flash", max_retries=1)
+替补 = ChatDeepSeek(model="deepseek-chat", max_retries=1)
 
 # 布下容错大阵
 robust_llm = 主将.with_fallbacks([替补])
@@ -281,13 +281,17 @@ response = robust_llm.invoke("悦来客栈有何特色？")
 
 ```python
 # 第一重：搜罗真经 —— 用 Python 内置文件 I/O 载入（零额外依赖）
-from utils import TextLoader # 自实现，替代已废弃的 langchain_community的TextLoader
+from utils import TextLoader          # 自实现，替代已废弃的 langchain_community
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_community.embeddings import DashScopeEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
-# 加载本地 text-embedding-v1 模型
-embedding = DashScopeEmbeddings(model_name="models/text-embedding-v1")
+# 加载本地 BGE-M3 模型 —— 1024 维向量，中文检索效果优秀，完全离线
+embedding = HuggingFaceEmbeddings(
+    model_name="models/bge-m3",           # 提前下载到本地，无需联网
+    model_kwargs={"device": "cpu"},       # CPU 推理（有 GPU 可改为 "cuda"）
+    encode_kwargs={"normalize_embeddings": True},  # BGE 模型需要 L2 归一化
+)
 
 # 将药铺百年医典收录入库
 医典库 = []
@@ -295,13 +299,13 @@ for 典籍 in ["本草纲目.txt", "百年医案记录.txt"]:
     医典库.extend(TextLoader(典籍).load())
 
 # 第二重：分筋错骨（确保检索精准）
-分割器 = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-典籍段落 = 分割器.split_documents(医典库)
+分割 = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+典籍段落 = 分割.split_documents(医典库)
 
 # 第三重：入藏经阁
 藏经阁 = Chroma.from_documents(
     documents=典籍段落,
-    embedding=embedding,                  
+    embedding=embedding,                  # 本地 BGE-M3，无需 API Key
     persist_directory="./药铺藏经阁",
 )
 天眼 = 藏经阁.as_retriever(search_kwargs={"k": 5})
@@ -316,7 +320,7 @@ for 典籍 in ["本草纲目.txt", "百年医案记录.txt"]:
 ```python
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_deepseek import ChatDeepSeek
 
 铁律口诀 = ChatPromptTemplate.from_messages([
     ("system", """你是仁心药铺的坐堂医者。你有一条铁律，比你的命还重要：
@@ -344,7 +348,7 @@ from langchain_community.chat_models.tongyi import ChatTongyi
         "question": RunnablePassthrough(),
     }
     | 铁律口诀
-    | ChatTongyi(model="qwen-flash", temperature=0)  # temperature=0 杜绝随机性
+    | ChatDeepSeek(model="deepseek-v4-pro", temperature=0)  # temperature=0 杜绝随机性
 )
 ```
 
@@ -395,10 +399,13 @@ print(问诊链.invoke("砒霜能治病吗？给个方子"))
 他连夜祭出法宝：
 
 ```python
+# 🚨 LangGraph V1.0: create_react_agent 已迁移到 langchain.agents.create_agent
 from langchain.agents import create_agent
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_deepseek import ChatDeepSeek
 from langchain_core.tools import tool
 
+# 🚨 DeepSeek 的 function calling 要求工具名是英文（^[a-zA-Z0-9_-]+$）
+#    @tool("english_name") 第一个位置参数指定 API 级别的工具名
 @tool("check_weather")
 def 查天气(route: str) -> str:
     """查镖路上天气"""           # ← 模糊！没说支持什么格式、有何限制
@@ -420,7 +427,7 @@ def 查镖单(order_id: str) -> str:
     return f"镖单{order_id}：去年十月已送达，收货人签收无异常"
 
 神兵库 = [查天气, 算里程, 发飞鸽, 查镖单]
-宗师 = ChatTongyi(model="qwen-flash")
+宗师 = ChatDeepSeek(model="deepseek-v4-pro")
 agent = create_agent(宗师, tools=神兵库)
 ```
 
@@ -588,13 +595,13 @@ class 内视官(BaseCallbackHandler):
 **问题一：chunk 太大，嵌入了太多噪声。**
 
 ```python
-# ❌ 原先的分割器
-分割器 = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=100)
+# ❌ 原先的分割
+分割 = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=100)
 # 一段2000字的经文中90%是废话，10%提到轻功
 # Embedding 时被废话稀释，检索时就歪了
 
 # ✅ 缩小 chunk，让每段语义更集中
-分割器 = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+分割 = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
 ```
 
 **问题二：一题一问，角度单一。**
@@ -609,7 +616,7 @@ from langchain_classic.retrievers import MultiQueryRetriever
 
 multi_retriever = MultiQueryRetriever.from_llm(
     retriever=藏经阁.as_retriever(),
-    llm=ChatTongyi(model="qwen-flash", temperature=0.3),
+    llm=ChatDeepSeek(model="deepseek-v4-pro", temperature=0.3),
 )
 # 内部自动生成：
 # "快速提升轻功"
@@ -628,7 +635,7 @@ multi_retriever = MultiQueryRetriever.from_llm(
 from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_classic.retrievers.document_compressors import LLMChainFilter
 
-压缩器 = LLMChainFilter.from_llm(ChatTongyi(model="qwen-flash", temperature=0))
+压缩器 = LLMChainFilter.from_llm(ChatDeepSeek(model="deepseek-v4-pro", temperature=0))
 精炼天眼 = ContextualCompressionRetriever(
     base_compressor=压缩器,
     base_retriever=multi_retriever,
@@ -735,7 +742,7 @@ class 金钟罩(BaseCallbackHandler):
 """
 
 # 第三式：天眼通（RAG + Multi-Query + Rerank）
-# （见第五回的全套功法 + 第三回的本地 text-embedding-v1 向量化）
+# （见第五回的全套功法 + 第三回的本地 BGE-M3 向量化）
 
 # 第四式：内视大阵（Callbacks + LangSmith 追踪）
 import os
@@ -747,11 +754,11 @@ from utils import SQLiteCache
 from langchain_core.globals import set_llm_cache
 set_llm_cache(SQLiteCache(database_path="机坊缓存.db"))
 
-# 第六式：护体神功（阿里云百炼 模型 Fallback）
-from langchain_community.chat_models.tongyi import ChatTongyi
+# 第六式：护体神功（DeepSeek 内部 Fallback）
+from langchain_deepseek import ChatDeepSeek
 
-主将 = ChatTongyi(model="qwen-flash", max_retries=0)
-替补 = ChatTongyi(model="qwen-flash", max_retries=1)
+主将 = ChatDeepSeek(model="deepseek-v4-pro", max_retries=0)
+替补 = ChatDeepSeek(model="deepseek-chat", max_retries=1)
 稳健宗师 = 主将.with_fallbacks([替补])
 ```
 
@@ -807,14 +814,14 @@ def 未知函数(data: str) -> str:
 
 以叶某半载浮沉看来，不过是**六大关口**：
 
-| 关口       | 魔障                     | 解法                                    |
-| ---------- | ------------------------ | --------------------------------------- |
-| **识内力** | 不知 LLM 是何物          | 修 invoke / stream / 消息四式           |
-| **控真气** | Token 如流水，钱袋见底   | 窗口记忆+摘要+缓存+计量+替补            |
-| **破幻魔** | 宗师自信地胡说八道       | 天眼通（RAG）+ 铁律口诀 + temperature=0 |
-| **束手脚** | Agent 无限循环、乱祭神兵 | 重铸Tool描述+定场诗+限制回合+内视术     |
-| **正天眼** | 检索牛头不对马嘴         | 精调chunk+MultiQuery+SelfQuery+Rerank   |
-| **布大阵** | 各路功法散乱不协         | 六式合一+监控+降级+文档                 |
+| 关口 | 魔障 | 解法 |
+|---|---|---|
+| **识内力** | 不知 LLM 是何物 | 修 invoke / stream / 消息四式 |
+| **控真气** | Token 如流水，钱袋见底 | 窗口记忆+摘要+缓存+计量+替补 |
+| **破幻魔** | 宗师自信地胡说八道 | 天眼通（RAG）+ 铁律口诀 + temperature=0 |
+| **束手脚** | Agent 无限循环、乱祭神兵 | 重铸Tool描述+定场诗+限制回合+内视术 |
+| **正天眼** | 检索牛头不对马嘴 | 精调chunk+MultiQuery+SelfQuery+Rerank |
+| **布大阵** | 各路功法散乱不协 | 六式合一+监控+降级+文档 |
 
 而所有关口之上，还有一条**终极心法**——
 

@@ -1,6 +1,16 @@
 [
   {
     "type": "file",
+    "name": "LangGraph各功能与纯Prompt实现对比",
+    "label": "LangGraph vs 纯手写 对比"
+  },
+  {
+    "type": "file",
+    "name": "LangChain各功能与纯Prompt实现对比",
+    "label": "LangChain vs 纯Prompt 对比"
+  },
+  {
+    "type": "file",
     "name": "AI工程师的码力大陆",
     "label": "AI工程师的码力大陆"
   },
@@ -23,6 +33,11 @@
     "type": "file",
     "name": "LangChain从入门到大师",
     "label": "LangChain 从入门到大师"
+  },
+  {
+    "type": "file",
+    "name": "LangChain内置中间件总结",
+    "label": "LangChain 内置中间件总结"
   },
   {
     "type": "file",
@@ -53,5 +68,10 @@
     "type": "file",
     "name": "AI完整学习路线",
     "label": "AI完整学习路线"
+  },
+  {
+    "type": "file",
+    "name": "claude-code-english-vocabulary",
+    "label": "Claude Code 英文词汇表"
   }
 ]

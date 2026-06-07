@@ -34,13 +34,15 @@
 
 ```python
 # 叶小舟的入门第一式 —— 召唤宗师
-from langchain_community.chat_models.tongyi import ChatTongyi
+import os
+from langchain_openai import ChatOpenAI
 
-llm = ChatTongyi(
-    model="qwen-flash",  # 阿里云百炼 qwen-flash 模型
-    temperature=0.7,          # 温度：越高越有创造力，越低越严谨
-    max_tokens=256,           # 限制输出长度，10 秒内见分晓
-    # api_key 自动从环境变量 DASHSCOPE_API_KEY 读取，无需硬编码
+llm = ChatOpenAI(
+    model="qwen-flash",       # 阿里云百炼 qwen-flash 模型
+    temperature=0.7,           # 温度：越高越有创造力，越低越严谨
+    max_tokens=256,            # 限制输出长度，10 秒内见分晓
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key=os.getenv("DASHSCOPE_API_KEY"),
 )
 
 # 聚气，发问！流式输出 —— 逐字显现，如内力流转
@@ -218,12 +220,13 @@ set_llm_cache(SQLiteCache(database_path=".cache.db"))
 
 ```python
 # ✅ 护体神功 —— 故障自动转移
-from langchain_community.chat_models.tongyi import ChatTongyi
+import os
+from langchain_openai import ChatOpenAI
 
 # 主将：Qwen-Flash，不重试，失败立刻交给替补
-主将 = ChatTongyi(model="qwen-flash", max_retries=0)
+主将 = ChatOpenAI(model="qwen-flash", max_retries=0, base_url=BASE_URL, api_key=API_KEY)
 # 替补：轻量模型，成本和延迟更低
-替补 = ChatTongyi(model="qwen-flash", max_retries=1)
+替补 = ChatOpenAI(model="qwen-flash", max_retries=1, base_url=BASE_URL, api_key=API_KEY)
 
 # 布下容错大阵
 robust_llm = 主将.with_fallbacks([替补])
@@ -233,11 +236,11 @@ response = robust_llm.invoke("悦来客栈有何特色？")
 # 客人完全不知道背后换了个宗师
 ```
 
-三颗头尽破。叶小舟看着账单——日均消耗从 $87 降到了 $3。
+三头噬金兽尽破。叶小舟看着账单——日均消耗从 $87 降到了 $3。
 
 "神了！"他一把抓住苏灵儿的手，"灵儿姑娘，你这三策可救了我的钱袋——"
 
-苏灵儿把手抽回去："少来。你这系统还有一个更要命的问题——但今天天色已晚，改日再说。"说完转身消失在夜色中。
+苏灵儿把手抽回去："少来。你这系统还有一个更要命的问题——但今天天色已晚，日后再说。"说完转身消失在夜色中。
 
 叶小舟追出客栈，只看到月光下一袭白裙的残影。
 
@@ -284,10 +287,10 @@ response = robust_llm.invoke("悦来客栈有何特色？")
 from utils import TextLoader # 自实现，替代已废弃的 langchain_community的TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_community.embeddings import DashScopeEmbeddings
+from utils import create_embedding
 
-# 加载本地 text-embedding-v1 模型
-embedding = DashScopeEmbeddings(model_name="models/text-embedding-v1")
+# text-embedding-v1，向量维度 1536，用来做测试足够了
+embedding = create_embedding("text-embedding-v1")
 
 # 将药铺百年医典收录入库
 医典库 = []
@@ -316,7 +319,7 @@ for 典籍 in ["本草纲目.txt", "百年医案记录.txt"]:
 ```python
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_openai import ChatOpenAI
 
 铁律口诀 = ChatPromptTemplate.from_messages([
     ("system", """你是仁心药铺的坐堂医者。你有一条铁律，比你的命还重要：
@@ -344,7 +347,7 @@ from langchain_community.chat_models.tongyi import ChatTongyi
         "question": RunnablePassthrough(),
     }
     | 铁律口诀
-    | ChatTongyi(model="qwen-flash", temperature=0)  # temperature=0 杜绝随机性
+    | ChatOpenAI(model="qwen-flash", temperature=0)  # temperature=0 杜绝随机性
 )
 ```
 
@@ -396,7 +399,7 @@ print(问诊链.invoke("砒霜能治病吗？给个方子"))
 
 ```python
 from langchain.agents import create_agent
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
 
 @tool("check_weather")
@@ -420,7 +423,7 @@ def 查镖单(order_id: str) -> str:
     return f"镖单{order_id}：去年十月已送达，收货人签收无异常"
 
 神兵库 = [查天气, 算里程, 发飞鸽, 查镖单]
-宗师 = ChatTongyi(model="qwen-flash")
+宗师 = ChatOpenAI(model="qwen-flash", base_url=BASE_URL, api_key=API_KEY)
 agent = create_agent(宗师, tools=神兵库)
 ```
 
@@ -467,38 +470,37 @@ Agent 陷入了**死循环**——不停地查天气，每分钟烧掉几十次 
 
 "**一，你的 Tool 描述太烂。** `查镖单`的 docstring 是'查阅镖局过往镖单'——Agent 不知道这个只查**已完成的历史镖单**，它以为能查未来的。你给它一个模糊的工具描述，它就会**在错误的时间用错误的工具**。"
 
-"**二，你没有设 recursion_limit。** Agent 查不到结果就会继续查，查到天荒地老。"
+"**二，你没用内视术（Callbacks）监控。** 它在那儿转圈转了 50 轮，你一点不知道——直到总镖头找上门。"
 
 "**三，你给了它太多的自由度。** 它发了飞鸽，觉得没得到满意答案，又发、又发——因为它觉得 **'继续试'比'承认失败'更符合它的目标**。"
 
-"**四，你没用内视术（Callbacks）监控。** 它在那儿转圈转了 50 轮，你一点不知道——直到总镖头找上门。"
+"**四，你没有设 recursion_limit。** Agent 查不到结果就会继续查，查到天荒地老。"
+
+
 
 ### 四步救Agent
 
 苏灵儿排出四步功法：
 
 ```python
-# ✅ 第一步：神兵描述重铸（让Agent明白工具的边界）
+# ✅ 第一步：神兵描述重铸 —— 从根上消除歧义
+# 🚨 阿里云百炼的 function calling 要求工具名是英文
 @tool("check_order_v2")
-def 查镖单(order_id: str) -> str:
+def 查镖单_v2(order_id: str) -> str:
     """查询镖局系统中**已完成**的历史镖单记录。
     注意：此工具只能查过往镖单，不可用于查询未出发的新镖。
     若镖单号在系统中不存在，说明此镖尚未录入或尚未出发。"""
     ...
 
 @tool("send_pigeon_v2")
-def 发飞鸽(镖师: str, msg: str) -> str:
+def 发飞鸽_v2(courier: str, msg: str) -> str:
     """向镖师发送飞鸽传书。警告：此操作会真实发送通知，
     每个任务最多调用一次，切勿重复发鸽骚扰镖师！"""
     ...
 
-# ✅ 第二步：限制最大回合（防无限循环）
-# create_agent 中不设 max_iterations，而是在调用时
-# 通过 config={"recursion_limit": N} 限制最大步数
-agent = create_agent(宗师, tools=神兵库)
-# result = agent.invoke({"messages": [...]}, config={"recursion_limit": 10})
+神兵库_v2 = [查镖单_v2, 发飞鸽_v2]
 
-# ✅ 第三步：铁律定场诗（让Agent知进退）
+# ✅ 第二步：铁律定场诗（让Agent知进退）
 定场诗 = """你是龙门镖局调度师。谨记：
 1. 每个神兵在同一任务中最多祭出一次
 2. 发飞鸽前，务必确认确有信息需要传达
@@ -506,10 +508,7 @@ agent = create_agent(宗师, tools=神兵库)
 4. 永远不要对同一个神兵用相同的入参反复祭出
 """
 
-# 🚨 旧版参数演变：state_modifier → prompt → system_prompt
-agent = create_agent(宗师, tools=神兵库, system_prompt=定场诗)
-
-# ✅ 第四步：内视术监控（实时观察每一手棋）
+# ✅ 第三步：内视术监控（先装上监控，出问题时能看见）
 from langchain_core.callbacks import BaseCallbackHandler
 
 class 内视官(BaseCallbackHandler):
@@ -527,6 +526,10 @@ class 内视官(BaseCallbackHandler):
         self.回合数 += 1
         if self.回合数 > 8:
             print(f"⚠️ 已过 {self.回合数} 回合，请核查是否陷入拉锯！")
+
+# ✅ 第四步：限制最大回合 —— 调用时设置 recursion_limit
+# create_agent 中不设 max_iterations，而是通过 config 传参
+# result = agent.invoke({"messages": [...]}, config={"recursion_limit": 10})
 ```
 
 ### 重新上线
@@ -555,7 +558,7 @@ class 内视官(BaseCallbackHandler):
 
 叶小舟接过来，令牌背面刻着一行小字：**"天下武功，唯调试不破。"**
 
-> **江湖笔记**：Agent 走火入魔四因——工具描述模糊、无限循环无上限、铁律不严、缺乏内视。四步救急：重铸神兵描述、限制回合、赋予定场诗、布内视大阵。
+> **江湖笔记**：Agent 走火入魔四因——工具描述模糊、无限循环无上限、铁律不严、缺乏内视。四步救急：限制回合、重铸神兵描述、赋予定场诗、布内视大阵。
 
 ---
 
@@ -609,7 +612,7 @@ from langchain_classic.retrievers import MultiQueryRetriever
 
 multi_retriever = MultiQueryRetriever.from_llm(
     retriever=藏经阁.as_retriever(),
-    llm=ChatTongyi(model="qwen-flash", temperature=0.3),
+    llm=ChatOpenAI(model="qwen-flash", temperature=0.3, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY")),
 )
 # 内部自动生成：
 # "快速提升轻功"
@@ -628,7 +631,7 @@ multi_retriever = MultiQueryRetriever.from_llm(
 from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_classic.retrievers.document_compressors import LLMChainFilter
 
-压缩器 = LLMChainFilter.from_llm(ChatTongyi(model="qwen-flash", temperature=0))
+压缩器 = LLMChainFilter.from_llm(ChatOpenAI(model="qwen-flash", temperature=0, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY")))
 精炼天眼 = ContextualCompressionRetriever(
     base_compressor=压缩器,
     base_retriever=multi_retriever,
@@ -748,10 +751,10 @@ from langchain_core.globals import set_llm_cache
 set_llm_cache(SQLiteCache(database_path="机坊缓存.db"))
 
 # 第六式：护体神功（阿里云百炼 模型 Fallback）
-from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_openai import ChatOpenAI
 
-主将 = ChatTongyi(model="qwen-flash", max_retries=0)
-替补 = ChatTongyi(model="qwen-flash", max_retries=1)
+主将 = ChatOpenAI(model="qwen-flash", max_retries=0, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY"))
+替补 = ChatOpenAI(model="qwen-flash", max_retries=1, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY"))
 稳健宗师 = 主将.with_fallbacks([替补])
 ```
 

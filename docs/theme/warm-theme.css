@@ -25,6 +25,9 @@ html.rp-warm {
   /* Warm-toned divider */
   --rp-c-divider: #d4a57440;
   --rp-c-divider-light: #d4a5741f;
+
+  /* Table header & code title — slightly deeper warm than bg */
+  --rp-code-title-bg: #f8ddc0;
 }
 
 /* ---- SwitchAppearance icon in warm mode ---- */

@@ -91,3 +91,74 @@ html.rp-warm .rp-switch-appearance__icon--moon {
 .rp-codeblock--bad .rp-codeblock__content {
   background-color: #fff0f01a;
 }
+
+/* ========================================
+ * 江湖志 · 美化样式
+ * Inspired by LangChain江湖志5.html
+ * ======================================== */
+
+/* ---- Tables: red accent header like jianghu-table ---- */
+html.rp-warm .rp-doc table thead th {
+  background: #c9423a;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-bottom: none;
+}
+
+html.rp-warm .rp-doc table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* ---- Blockquotes: left accent border, warm bg ---- */
+html.rp-warm .rp-doc blockquote {
+  border-left: 4px solid #c9423a;
+  background: #fffdf9;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 24px;
+  color: #5c4a3a;
+  font-style: normal;
+}
+
+html.rp-warm .rp-doc blockquote strong {
+  color: #c9423a;
+}
+
+/* ---- Horizontal rules: accent color ---- */
+html.rp-warm .rp-doc hr {
+  border-color: #e5d8c4;
+}
+
+/* ---- Callout: warm-styled rspress callouts ---- */
+html.rp-warm .rp-callout--tip {
+  --rp-container-tip-text: #c9423a;
+  --rp-container-tip-border: #c9423a33;
+  --rp-container-tip-bg: #fffdf9;
+  --rp-container-tip-code-bg: #c9423a1a;
+  background: var(--rp-container-tip-bg);
+  border-color: var(--rp-container-tip-border);
+}
+
+html.rp-warm .rp-callout--tip .rp-callout__title {
+  color: #c9423a;
+}
+
+html.rp-warm .rp-callout--warning {
+  background: #fffdf9;
+  border-color: #e89b3c;
+}
+
+html.rp-warm .rp-callout--danger {
+  background: #fff5f5;
+  border-color: #cf2727;
+}
+
+/* ---- Links: accent tone ---- */
+html.rp-warm .rp-doc a {
+  color: #b53530;
+}
+
+/* ---- Strong text: slightly deeper warm tone ---- */
+html.rp-warm .rp-doc strong {
+  color: #2c2416;
+}

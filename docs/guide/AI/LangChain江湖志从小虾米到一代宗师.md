@@ -643,21 +643,40 @@ multi_retriever = MultiQueryRetriever.from_llm(
 # 四个角度合并结果 → 覆盖面暴增
 ```
 
-**问题三：检索到的不一定有用。**
+**问题三：检索到的不一定有用 —— 先做 LLM 过滤。**
 
 ```python
 # ❌ 检索返回10条，LLM 不一定能从中挑出真正相关的
 
-# ✅ 加一层 Rerank：让检索结果再排一次
+# ✅ 第三斧：LLM 过滤 —— 逐个判断"是否相关"，不相关的直接丢弃
 from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_classic.retrievers.document_compressors import LLMChainFilter
 
-压缩器 = LLMChainFilter.from_llm(ChatOpenAI(model="qwen-flash", temperature=0, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key=os.getenv("DASHSCOPE_API_KEY")))
-精炼天眼 = ContextualCompressionRetriever(
-    base_compressor=压缩器,
+过滤器 = LLMChainFilter.from_llm(
+    ChatOpenAI(model="qwen-flash", temperature=0,
+               base_url="...", api_key=os.getenv("DASHSCOPE_API_KEY"))
+)
+过滤检索器 = ContextualCompressionRetriever(
+    base_compressor=过滤器,
     base_retriever=multi_retriever,
 )
-# 先取10卷 → LLM 判断相关性 → 只留真正相关的3卷
+过滤结果 = 过滤检索器.invoke("快速提升轻功")
+# 10卷 → LLM 二元判断（留/弃）→ 过滤后剩 ~5 卷
+```
+
+**问题四：过滤后文档没有排序，不知道哪个最相关。**
+
+```python
+# ✅ 第四斧：Rerank 打分排序 —— 对每条文档用 LLM 精确评分（0-10分）
+from utils import LLMReranker
+
+reranker = LLMReranker(
+    llm=ChatOpenAI(model="qwen-flash", temperature=0,
+                   base_url="...", api_key=os.getenv("DASHSCOPE_API_KEY")),
+    top_k=3,  # 最终只取最相关的 3 条
+)
+精排文档 = reranker.compress(过滤结果, "快速提升轻功")
+# 5 卷 → LLM 逐条评分（0-10）→ 按分降序 → 取 Top-3
 ```
 
 ### 大功告成
@@ -697,7 +716,7 @@ from langchain_classic.retrievers.document_compressors import LLMChainFilter
 
 "……LangChain 双侠就 LangChain 双侠吧。"
 
-> **江湖笔记**：迷魂阵（RAG 检索不准）三步破——chunk 求精不贪大、Multi-Query 多角度包抄、Rerank 去芜存菁。三板斧下来，检索命中率翻倍不止。
+> **江湖笔记**：迷魂阵（RAG 检索不准）四步破——chunk 精调、Multi-Query 多角度覆盖、LLM 过滤剔除无关、Rerank 评分排序取 Top-K。四板斧下来，检索命中率翻倍不止。
 
 ---
 
@@ -758,8 +777,8 @@ class 金钟罩(BaseCallbackHandler):
 - 同一神兵不可反复祭出
 """
 
-# 第三式：天眼通（RAG + Multi-Query + Rerank）
-# （见第五回的全套功法 + 第三回的本地 text-embedding-v1 向量化）
+# 第三式：天眼通（RAG + Multi-Query + LLM Chain Filter + Rerank）
+# （见第三回解决幻魔的功法+第五回解决迷魂阵的全套功法）
 
 # 第四式：内视大阵（Callbacks + LangSmith 追踪）
 import os
@@ -780,6 +799,8 @@ from langchain_openai import ChatOpenAI
 ```
 
 六式齐出，混沌老祖的内力消耗从每秒 200 次降到 5 次。死循环被金钟罩截断，幻觉被铁律关进笼子，垃圾检索被天眼通拨正。
+
+但是叶小舟发现混沌老祖偶尔会发癫痫，不断调用同一个工具，导致 Agent 死循环。（docstring+铁律+内视+步数限制，上面只提了内视）
 
 最后，叶小舟在系统核心找到了一个**没有 docstring 的 Tool**——就是它导致 Agent 不断猜这个工具是干嘛的、怎么用、为什么总失败。
 

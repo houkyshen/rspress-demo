@@ -40,3 +40,51 @@ html.rp-warm .rp-switch-appearance__icon--sun {
 html.rp-warm .rp-switch-appearance__icon--moon {
   display: none !important;
 }
+
+/* ========================================
+ * Code block good/bad markers
+ * Usage: ```js good  or  ```js bad
+ * ======================================== */
+
+/* ---- Good code block (green gradient, 1px, left→right) ---- */
+.rp-codeblock--good {
+  border-left: 1px solid #388e3c !important;
+}
+
+.rp-codeblock--good::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to right, #388e3c, #a5d6a7);
+  border-radius: 1px 0 0 1px;
+  z-index: 1;
+}
+
+/* ---- Bad code block (red gradient, 1px, left→right) ---- */
+.rp-codeblock--bad {
+  border-left: 1px solid #c62828 !important;
+}
+
+.rp-codeblock--bad::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to right, #c62828, #ef9a9a);
+  border-radius: 1px 0 0 1px;
+  z-index: 1;
+}
+
+/* Optional: subtle background tint */
+.rp-codeblock--good .rp-codeblock__content {
+  background-color: #f0fff01a;
+}
+
+.rp-codeblock--bad .rp-codeblock__content {
+  background-color: #fff0f01a;
+}

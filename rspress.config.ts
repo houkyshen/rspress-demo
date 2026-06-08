@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { defineConfig } from '@rspress/core';
+import { transformerCodeBlockMarker } from './docs/theme/codeblock-marker';
 
 export default defineConfig({
   root: path.join(__dirname, 'docs'),
@@ -24,4 +25,10 @@ export default defineConfig({
   globalUIComponents: [
     path.join(__dirname, 'docs/theme/AppearanceSwitch.tsx'),
   ],
+  // Markdown: add shiki transformer for good/bad code block markers
+  markdown: {
+    shiki: {
+      transformers: [transformerCodeBlockMarker()],
+    },
+  },
 });

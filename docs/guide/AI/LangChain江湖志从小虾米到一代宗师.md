@@ -18,6 +18,13 @@
 
 ## 第一回：初入江湖 —— 开源镇奇遇
 
+### 故事背景
+从前江湖，少林武当坐镇天下，得道宗师屈指可数。多少武者千里奔赴，焚香叩首，只求一句点拨、一套真传。
+
+而今 AI 浪潮席卷而来，壁垒轰然打破，世间再无难求的宗师壁垒。
+
+不论根基深浅、资质高低，人人都能随时召来堪比宗师的智识助力，拆解难题、推演思路、打磨技法，曾经遥不可及的顶尖指引，化作随手可得的随身良师。
+
 ### 下山
 
 叶小舟，十九岁，青云观末代弟子。师父云游前留下八字真言："AI 大世，速去开源镇。"
@@ -30,7 +37,7 @@
 
 掌柜哈哈大笑："小子，万法归一。我们 LangChain 一门，妙就妙在——**你学会一种运劲法门，各派内力皆可驱使**。来，先教你第一招。"
 
-### 第一丝内力
+### 召唤宗师
 
 ```python good
 # 叶小舟的入门第一式 —— 召唤宗师
@@ -38,7 +45,7 @@ import os
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    model="qwen-flash",       # 阿里云百炼 qwen-flash 模型
+    model="qwen-flash",       # 通义千问 qwen-flash 模型
     temperature=0.7,           # 温度：越高越有创造力，越低越严谨
     max_tokens=256,            # 限制输出长度，10 秒内见分晓
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -53,7 +60,7 @@ for chunk in llm.stream("何为江湖？"):
 
 叶小舟瞪大眼睛——他平生第一次，看到文字从一个"虚无之物"中凭空生出。
 
-"这算什么？"掌柜往嘴里扔了颗花生，"刚才那叫**裸问**——如同你对着空气喊话。高手虽强，但你得会**念口诀**。"
+"这算什么？"掌柜往嘴里扔了颗花生，"刚才那叫**裸问**——如同你对着空气喊话。宗师虽强，但你得会**念口诀**。"
 
 ### 第一句口诀
 
@@ -99,7 +106,7 @@ for chunk in llm.stream(formatted):
 第二天，他收到了一张账单。
 
 ```text bad
-阿里云百炼 武备堂 敬启：
+开源镇 叶小舟 敬启：
   昨日真气消耗：14,723,456 tokens
   折合银两：$87.34
   您的令牌余额不足，请及时充值。
@@ -226,7 +233,7 @@ import os
 from langchain_openai import ChatOpenAI
 
 # 主将：Qwen-Flash，不重试，失败立刻交给替补
-主将 = ChatOpenAI(model="qwen-flash", max_retries=0, base_url=BASE_URL, api_key=API_KEY)
+主将 = ChatOpenAI(model="qwen-plus", max_retries=0, base_url=BASE_URL, api_key=API_KEY)
 # 替补：轻量模型，成本和延迟更低
 替补 = ChatOpenAI(model="qwen-flash", max_retries=1, base_url=BASE_URL, api_key=API_KEY)
 
@@ -287,8 +294,8 @@ response = robust_llm.invoke("悦来客栈有何特色？")
 "首先，把药铺积攒的**真实医案、药典**统统搬进藏经阁。"叶小舟噼里啪啦敲键盘：
 
 ```python good
-# 第一重：搜罗真经 —— 用 Python 内置文件 I/O 载入（零额外依赖）
-from utils import TextLoader # 自实现，替代已废弃的 langchain_community的TextLoader
+# 第一重：搜罗真经
+from utils import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from utils import create_embedding
@@ -800,7 +807,7 @@ from utils import SQLiteCache
 from langchain_core.globals import set_llm_cache
 set_llm_cache(SQLiteCache(database_path="机坊缓存.db"))
 
-# 第六式：护体神功（阿里云百炼 模型 Fallback）
+# 第六式：护体神功（模型Fallback）
 from langchain_openai import ChatOpenAI
 
 主将 = ChatOpenAI(model="qwen-flash", max_retries=0)
@@ -810,7 +817,7 @@ from langchain_openai import ChatOpenAI
 
 六式齐出，混沌老祖的内力消耗从每秒 200 次降到 5 次。死循环被金钟罩截断，幻觉被铁律关进笼子，垃圾检索被天眼通拨正。
 
-但是叶小舟发现混沌老祖偶尔会发癫痫，不断调用同一个工具，导致 Agent 死循环。（docstring+铁律+内视+步数限制，上面只提了内视）
+但是叶小舟发现混沌老祖偶尔会发癫痫，不断调用同一个工具，导致 Agent 死循环。
 
 最后，叶小舟在系统核心找到了一个**没有 docstring 的 Tool**——就是它导致 Agent 不断猜这个工具是干嘛的、怎么用、为什么总失败。
 
@@ -823,6 +830,8 @@ def 未知函数(data: str) -> str:
     请使用'查天气'或'算里程'替代。"""
     return "此函数已废弃，调用无效。"
 ```
+
+同时设置recursion_limit=5。
 
 瞬间，混沌老祖安静了。
 
@@ -879,12 +888,11 @@ def 未知函数(data: str) -> str:
 
 > **后记**：叶小舟和苏灵儿的 LangChain 武道堂，后来成了开源镇最热闹的道场。学费不贵——三两银子包教会，送一册《LangChain 江湖志》。堂训只有八个字：**"功不唐捐，Bug 终克。"**
 >
-> 至于叶掌门和苏掌门后来有没有更进一步的故事——那就是另一本秘籍了。
+> 至于叶掌门和苏掌门后来有没有更进一步的故事——那就是另一本江湖志了。
 >
-> *（提示：他们的第一代弟子中出了一个叫 GPT-5 的小子，那是后话，暂且不表。）*
 
 ---
 
-> **秘籍撰于**：丙午年·丙午月·初一（2026-06-02）
+> **此志撰于**：2026-06-10
 >
 > **声明**：本故事纯属虚构，但每一个 bug 都是真实的。如有雷同，说明你也踩过这些坑。

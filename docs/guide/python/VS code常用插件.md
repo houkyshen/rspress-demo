@@ -26,4 +26,6 @@ Path Intellisense是一个插件，它可以自动完成路径。只需要在单
 ### Even Better TOML
 Even Better TOML是一个插件，它可以实现对TOML文件的语法高亮。
 
-
+## better comment
+让注释变好看。
+![](images/VS%20code常用插件-2026-06-12-08-44-32.png)

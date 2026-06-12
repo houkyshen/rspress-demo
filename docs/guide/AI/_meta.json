@@ -1,6 +1,11 @@
 [
   {
     "type": "file",
+    "name": "Langchain等AI框架的源码解读",
+    "label": "Langchain等AI框架的源码解读"
+  },
+  {
+    "type": "file",
     "name": "LangGraph各功能与纯Prompt实现对比",
     "label": "LangGraph vs 纯手写 对比"
   },

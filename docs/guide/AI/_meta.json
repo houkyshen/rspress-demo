@@ -16,16 +16,6 @@
   },
   {
     "type": "file",
-    "name": "AI工程师的码力大陆",
-    "label": "AI工程师的码力大陆"
-  },
-  {
-    "type": "file",
-    "name": "AI Agent工程师学习路线从入门到专家",
-    "label": "AI Agent 工程师学习路线"
-  },
-  {
-    "type": "file",
     "name": "LangChain江湖志从小虾米到一代宗师",
     "label": "LangChain 江湖志（武侠故事）"
   },
@@ -68,11 +58,6 @@
     "type": "file",
     "name": "vibe-coding注意事项",
     "label": "Vibe Coding 注意事项"
-  },
-  {
-    "type": "file",
-    "name": "AI完整学习路线",
-    "label": "AI完整学习路线"
   },
   {
     "type": "file",

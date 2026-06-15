@@ -13,12 +13,6 @@
   },
   {
     "type": "dir",
-    "name": "use-mdx",
-    "label": "",
-    "collapsed": true
-  },
-  {
-    "type": "dir",
     "name": "github",
     "label": "Github",
     "collapsed": true
@@ -27,6 +21,18 @@
     "type": "dir",
     "name": "AI",
     "label": "AI Tools",
+    "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "AI-roadmap",
+    "label": "AI 学习路线",
+    "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "视频转文字",
+    "label": "视频转文字",
     "collapsed": true
   }
 ]

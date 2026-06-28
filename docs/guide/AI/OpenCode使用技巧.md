@@ -1,6 +1,6 @@
 # OpenCode使用技巧
 ## 自定义命令
-在C:/Users/Administrator/.config/opencode/opencode.json文件中添加自定义命令，例如：
+在C:/Users/Administrator/.config/opencode/opencode.jsonc文件中添加自定义命令，例如：
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
@@ -35,4 +35,26 @@ OpenCode会自动读取Claude Code的系统提示词，而Claude Code的系统�
 - **Base URL**：`https://api.deepseek.com`
 
 ```
+
+## 权限配置
+```json
+// C:/Users/Administrator/.config/opencode/opencode.jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "ask",          // 默认所有操作需确认
+    "bash": "allow",     // Bash 命令自动放行
+    "edit": "deny"       // 禁止编辑文件
+  }
+}
+```
+一次性设置放开所有权限：
+```json
+{
+  "permission": "allow"  // 所有操作自动放行
+}
+```
+
+
+
 

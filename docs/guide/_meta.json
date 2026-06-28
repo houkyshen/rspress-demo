@@ -34,5 +34,11 @@
     "name": "视频转文字",
     "label": "视频转文字",
     "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "银行相关知识",
+    "label": "银行相关知识",
+    "collapsed": true
   }
 ]

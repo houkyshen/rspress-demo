@@ -1,5 +1,5 @@
 # 荷兰/爱尔兰/卢森堡DMS欧洲商户支付必备专业术语
-适配你的场景：汇丰软件架构、三国上线、**法国银行为统一中间清算行**，分为6大模块：SEPA欧元清算、法行代理行结算、三国本地支付、欧盟监管合规、商户收单DMS架构、SWIFT/ISO20022报文标准，全部是架构设计、对账、渠道对接、合规开发高频必懂词汇。
+适配你的场景：汇丰软件架构、三国上线、**法国银行为统一中间清算行**，分为6大模块：SEPA欧元清算、法行代理行结算、三国本地支付、欧盟监管合��[...]
 
 ## 一、SEPA 欧元清算核心（三国通用，法中间行核心承载）
 三国均属于SEPA区，所有商户资金先归集至法国中间行做轧差结算，SEPA是底层标准
@@ -21,7 +21,7 @@
 4. **Loro Account 来账** 法国中间行视角，存放汇丰资金的账户（对方账本）
 5. **Vostro Account 同业账户** 同Loro，欧洲银行通用叫法
 6. **Correspondent Banking Agreement 代理行协议** 汇丰与法国中间行签署的清算、轧差、手续费、日切规则合同
-7. **Netting / Net Settlement 轧差净额结算** 法国中间行每日对荷兰/爱尔兰/卢森堡三国交易对冲应收应付，只划转净额（降低资金占用，架构核心账务逻辑）
+7. **Netting / Net Settlement 轧差净额结算** 法国中间行每日对荷兰/爱尔兰/卢森堡三国交易对冲应收应付，只划转净额（降低资金占用，架构核心账务逻��[...]
 8. **Gross Settlement 全额结算** 不轧差，单笔全额划拨，高价值商户通道
 9. **Cut-off Time 日切截单时间** 法国中间行每日SEPA批量清算截止时点，超过则顺延下一清算日（DMS日终对账核心参数）
 10. **Value Date 起息日** 资金在法国中间行账户实际计息、可用日期，区分交易日期与清算起息日
@@ -44,6 +44,15 @@
 1. **Bancontact Luxembourg** 卢森堡线下零售支付
 2. **Clearstream** 卢森堡证券清算机构（高净值商户、跨境B2B大额资金配套）
 3. **SEPA B2B Direct Debit** 卢森堡企业商户高频订阅扣款
+
+### 补充：EIPS / EVPS（草稿 A）
+1. **EIPS（European Instant Payment Scheme）** 欧洲即时支付方案
+   - CN: 欧洲范围内推动即时支付互操作性的标准/方案，承接并推动 SCT Inst 与 EPI 的互通，侧重零售/实时清算、低时延、7×24 可用性与监管合规（与 Instant Payments Regulation、ISO20022/SEPA 即时清算相关）。
+   - EN: A pan‑European instant payments scheme to enable interoperable instant euro payments, complementing SCT Inst and EPI, focusing on retail real‑time clearing, low latency, 24/7 availability and regulatory alignment (related to the Instant Payments Regulation and ISO20022).
+
+2. **EVPS（European Value Payment Scheme）** 欧洲高价值/机构级支付通道
+   - CN: 面向大额或机构级别资金划拨的支付/清算通道，支持 gross settlement（全额结算）、增强合规与可追溯性，通常与 SWIFT（MT/gpi）、Nostro/Loro 资金流与净额/全额结算模型联动，适配高价值企业/机构清算场景。
+   - EN: A pan‑European clearing channel tailored for high‑value or institutional payments, supporting gross settlement, enhanced compliance and traceability, typically interoperating with SWIFT (MT/gpi), Nostro/Loro account flows and net/gross settlement models, suited for high‑value institutional clearing.
 
 ## 四、欧盟支付监管合规术语（DMS风控、客户数据、商户准入强制落地）
 ### 支付法规框架
@@ -94,7 +103,7 @@
 7. **COR1 / COR2 / COR3** SEPA修正、撤销、退回报文类型，差错处理接口依赖
 
 # 架构落地重点提示（贴合你法国中间行场景）
-1. 资金链路：荷兰/爱尔兰/卢森堡收单行 → SEPA ISO20022批量 → 法国中间行Nostro账户轧差净额结算 → 汇丰DMS商户分户账清算
+1. 资金链路：荷兰/爱尔兰/���森堡收单行 → SEPA ISO20022批量 → 法国中间行Nostro账户轧差净额结算 → 汇丰DMS商户分户账清算
 2. 核心难点词汇：**Nostro/Loro、Netting轧差、COBO代收、Value Date起息日、Cut-off日切、ISO20022 SEPA报文**，是和法国银行技术对接、对账开发最高频术语
 3. 三国差异化：荷兰优先iDEAL/SCT Inst；爱尔兰侧重本地FPS+Revolut Pay；卢森堡以B2B SDD B2B为主，全部统一归集至法国中间行处理净额清算。
 

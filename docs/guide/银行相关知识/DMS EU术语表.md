@@ -80,6 +80,8 @@
 | Funds-in-Transit | 在途待结算资金 |
 | Merchant Ledger | DMS商户分户虚拟账 |
 | Unique Reconciliation ID | 全局对账流水唯一标识 |
+| EIPS | European Instant Payment Scheme（欧洲即时支付方案） — 面向欧盟跨国互联的实时支付规范或实施方案，作为SEPA即时支付生态的扩展标准/实践。 |
+| EVPS | Enhanced Value Processing Service（增强型价值处理服务） — 结算层的增值处理能力（如币种转换、费用拆分、清算前保序处理），用于提高DMS对复杂交易场景的支持能力。 |
 
 ## 六、报文、账户与网络通信（对接法国银行技术层）
 | 英文术语 | 中文释义 |

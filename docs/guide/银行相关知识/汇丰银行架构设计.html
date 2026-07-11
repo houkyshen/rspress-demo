@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>汇丰级银行支付系统 — 完整架构</title>
+  <style>
+    /* ===========================================================
+       Deck framework — DO NOT EDIT the rules in this <style> block.
+       Edit only inside the second <style> block below (per-deck
+       styles) and inside <section class="slide"> bodies.
+
+       Contract this framework provides:
+         - 1920×1080 fixed canvas, scaled to fit the viewport
+         - Only .slide.active is visible at a time
+         - Prev/next + counter rendered outside the scaled stage
+         - Keyboard (← → space PgUp PgDn Home End), click, and stored
+           position survive iframe focus quirks
+         - "Save as PDF" produces a multi-page vertical PDF, one slide
+           per page, by toggling every slide visible under @media print
+       =========================================================== */
+    :root {
+      --bg: #fff7ee;
+      --fg: #1a1a2e;
+      --muted: #5a6677;
+      --accent: #1a5276;
+      --surface: #ffffff;
+      --shell: #0a0e17;
+      --gold: #b8860b;
+      --blue-deep: #0d3b66;
+      --blue-mid: #1a5276;
+      --blue-light: #2980b9;
+      --blue-pale: #d4e6f1;
+      --red-warn: #c0392b;
+      --green-ok: #1e7e5c;
+      --layer-gateway: #2980b9;
+      --layer-business: #1a6e5c;
+      --layer-core: #0d3b66;
+      --layer-risk: #b84c3d;
+      --layer-support: #5a6677;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--shell);
+      color: var(--fg);
+      font: 18px/1.5 -apple-system, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .deck-shell {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    .deck-stage {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg);
+      position: relative;
+      transform-origin: top left;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .slide:not(.active) { display: none !important; }
+    :where(.slide.active) { display: flex; flex-direction: column; }
+
+    .deck-counter {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(10, 14, 26, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.18em;
+      z-index: 1000;
+    }
+    .deck-counter button {
+      width: 36px; height: 36px;
+      background: transparent;
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s;
+    }
+    .deck-counter button:hover { background: rgba(255, 255, 255, 0.12); }
+    .deck-counter button[disabled] { opacity: 0.3; cursor: default; }
+    .deck-counter .deck-count {
+      padding: 0 14px;
+      letter-spacing: 0.22em;
+      color: #fff;
+    }
+    .deck-counter .deck-count .total { color: rgba(255, 255, 255, 0.5); }
+    .deck-hint {
+      position: fixed;
+      bottom: 26px;
+      right: 28px;
+      color: rgba(255, 255, 255, 0.4);
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    @media print {
+      @page { size: 1920px 1080px; margin: 0; }
+      html, body {
+        width: 1920px !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+      }
+      .deck-shell {
+        position: static !important;
+        display: block !important;
+        inset: auto !important;
+      }
+      .deck-stage {
+        width: 1920px !important;
+        height: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        position: static !important;
+      }
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        inset: auto !important;
+        width: 1920px !important;
+        height: 1080px !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .deck-counter, .deck-hint { display: none !important; }
+    }
+  </style>
+  <style>
+    /* ===========================================================
+       SLOT: per-deck styles — typography, layout helpers, slide variants
+       =========================================================== */
+
+    /* ---- base typography ---- */
+    .s-cover      { display: flex !important; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 80px 120px; }
+    .s-section    { display: flex !important; flex-direction: column; padding: 72px 100px 48px; }
+    .s-arch       { display: flex !important; flex-direction: column; padding: 56px 80px 40px; }
+    .s-compare    { display: flex !important; flex-direction: column; padding: 64px 100px 48px; }
+    .s-end        { display: flex !important; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 80px 120px; }
+
+    /* ---- cover ---- */
+    .cover-tag {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+      padding: 6px 24px;
+      border-radius: 4px;
+      margin-bottom: 36px;
+    }
+    .cover-title {
+      font-size: 72px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--blue-deep);
+      line-height: 1.15;
+      max-width: 1400px;
+      margin-bottom: 28px;
+    }
+    .cover-sub {
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      max-width: 1000px;
+      line-height: 1.5;
+    }
+    .cover-line {
+      width: 80px;
+      height: 3px;
+      background: var(--gold);
+      margin: 32px auto 0;
+    }
+
+    /* ---- section header ---- */
+    .sec-num {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sec-title {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--blue-deep);
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .sec-desc {
+      font-size: 20px;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      margin-bottom: 40px;
+      max-width: 1100px;
+    }
+
+    /* ---- architecture layers ---- */
+    .arch-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex: 1;
+      min-height: 0;
+    }
+    .arch-layer {
+      display: flex;
+      align-items: stretch;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .arch-layer .layer-tag {
+      width: 220px;
+      min-width: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.05em;
+      padding: 20px 16px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .arch-layer .layer-body {
+      flex: 1;
+      background: var(--surface);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+    }
+    .layer-chip {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--fg);
+      background: #f5f0e8;
+      padding: 6px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .layer-chip.highlight {
+      background: var(--blue-pale);
+      color: var(--blue-deep);
+      font-weight: 600;
+    }
+    .tag-gateway  { background: var(--layer-gateway); }
+    .tag-business { background: var(--layer-business); }
+    .tag-core     { background: var(--layer-core); }
+    .tag-risk     { background: var(--layer-risk); }
+    .tag-support  { background: var(--layer-support); }
+
+    /* ---- module grid ---- */
+    .module-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+      flex: 1;
+      min-height: 0;
+      align-content: start;
+    }
+    .module-card {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 28px 32px;
+      border-left: 4px solid var(--blue-mid);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .module-card .card-num {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .module-card .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blue-deep);
+      letter-spacing: 0.02em;
+    }
+    .module-card .card-items {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+    }
+    .module-card.accent-red  { border-left-color: var(--red-warn); }
+    .module-card.accent-green{ border-left-color: var(--green-ok); }
+    .module-card.accent-gold { border-left-color: var(--gold); }
+
+    /* ---- compare table ---- */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+    .compare-table th {
+      background: var(--blue-deep);
+      color: #fff;
+      font-weight: 700;
+      padding: 18px 28px;
+      text-align: left;
+      font-size: 19px;
+      letter-spacing: 0.04em;
+    }
+    .compare-table td {
+      padding: 16px 28px;
+      border-bottom: 1px solid #e8e0d5;
+      color: var(--fg);
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+    .compare-table tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.5);
+    }
+    .compare-table .col-label {
+      font-weight: 700;
+      color: var(--blue-deep);
+      width: 280px;
+      white-space: nowrap;
+    }
+    .check-mark { color: var(--green-ok); font-weight: 700; margin-right: 6px; }
+
+    /* ---- full architecture overview (slide 8) ---- */
+    .arch-overview {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-height: 0;
+    }
+    .ao-row {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+    }
+    .ao-block {
+      border-radius: 10px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      color: #fff;
+      flex: 1;
+      position: relative;
+    }
+    .ao-block .ao-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .ao-block .ao-subs {
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.85;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+    }
+    .ao-gateway  { background: var(--layer-gateway); }
+    .ao-business { background: var(--layer-business); }
+    .ao-core     { background: var(--layer-core); }
+    .ao-risk     { background: var(--layer-risk); }
+    .ao-support  { background: var(--layer-support); }
+
+    /* ---- end slide ---- */
+    .end-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+    .end-title {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--blue-deep);
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .end-sub {
+      font-size: 22px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ---- animations ---- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .slide.active .anim-1 { animation: fadeInUp 0.5s ease-out both; }
+    .slide.active .anim-2 { animation: fadeInUp 0.5s ease-out 0.1s both; }
+    .slide.active .anim-3 { animation: fadeInUp 0.5s ease-out 0.2s both; }
+    .slide.active .anim-4 { animation: fadeInUp 0.5s ease-out 0.3s both; }
+    .slide.active .anim-5 { animation: fadeInUp 0.5s ease-out 0.35s both; }
+    .slide.active .anim-6 { animation: fadeInUp 0.5s ease-out 0.4s both; }
+    .slide.active .anim-scale { animation: scaleIn 0.5s ease-out both; }
+    .slide.active .anim-left { animation: slideInLeft 0.5s ease-out both; }
+    .slide.active .anim-layer-1 { animation: fadeInUp 0.45s ease-out 0.05s both; }
+    .slide.active .anim-layer-2 { animation: fadeInUp 0.45s ease-out 0.14s both; }
+    .slide.active .anim-layer-3 { animation: fadeInUp 0.45s ease-out 0.23s both; }
+    .slide.active .anim-layer-4 { animation: fadeInUp 0.45s ease-out 0.32s both; }
+    .slide.active .anim-layer-5 { animation: fadeInUp 0.45s ease-out 0.41s both; }
+
+    /* ---- decorative ---- */
+    .top-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue-deep) 0%, var(--blue-light) 40%, var(--gold) 70%, var(--blue-deep) 100%);
+    }
+    .corner-mark {
+      position: absolute;
+      bottom: 32px;
+      right: 48px;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: #ccc;
+      text-transform: uppercase;
+    }
+
+    /* ---- bullet list ---- */
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bullet-list li {
+      padding-left: 32px;
+      position: relative;
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--fg);
+      letter-spacing: 0.02em;
+    }
+    .bullet-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--blue-mid);
+    }
+    .bullet-list li.gold::before { background: var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="deck-stage" id="deck-stage">
+
+      <!-- ============ SLIDE 01 — 封面 ============ -->
+      <section class="slide active s-cover" data-screen-label="01 封面">
+        <div class="top-stripe"></div>
+        <div class="cover-tag anim-1">HSBC-Level · Financial Payment Architecture</div>
+        <h1 class="cover-title anim-2">汇丰级银行支付系统<br>完整架构</h1>
+        <p class="cover-sub anim-3">四层金融架构 · 跨境清算 · AML 反洗钱 · 监管合规 · 高可用金融级</p>
+        <div class="cover-line anim-4"></div>
+        <div class="corner-mark">CONFIDENTIAL</div>
+      </section>
+
+      <!-- ============ SLIDE 02 — 整体架构概览 ============ -->
+      <section class="slide s-arch" data-screen-label="02 整体架构">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">ARCHITECTURE OVERVIEW</div>
+        <h2 class="sec-title anim-2">五层架构总览</h2>
+        <p class="sec-desc anim-3">标准金融四层 + 支撑平台层 — 覆盖接入、交易、账务清算、风控合规、运维支撑</p>
+        <div class="arch-stack">
+          <div class="arch-layer anim-layer-1">
+            <div class="layer-tag tag-gateway">渠道接入<br>网关层</div>
+            <div class="layer-body">
+              <span class="layer-chip highlight">线上渠道网关</span>
+              <span class="layer-chip highlight">线下渠道网关</span>
+              <span class="layer-chip highlight">外联合作网关</span>
+              <span class="layer-chip highlight">国际跨境网关 (SWIFT)</span>
+              <span class="layer-chip">协议适配</span>
+              <span class="layer-chip">流量控制</span>
+              <span class="layer-chip">统一验签</span>
+            </div>
+          </div>
+          <div class="arch-layer anim-layer-2">
+            <div class="layer-tag tag-business">支付交易<br>核心业务层</div>
+            <div class="layer-body">
+              <span class="layer-chip highlight">交易编排引擎</span>
+              <span class="layer-chip highlight">商户收单</span>
+              <span class="layer-chip highlight">个人支付</span>
+              <span class="layer-chip highlight">批量代付代扣</span>
+              <span class="layer-chip highlight">跨境支付</span>
+              <span class="layer-chip">多币种</span>
+              <span class="layer-chip">分布式事务</span>
+            </div>
+          </div>
+          <div class="arch-layer anim-layer-3">
+            <div class="layer-tag tag-core">资金与账务<br>清算核心层</div>
+            <div class="layer-body">
+              <span class="layer-chip highlight">全行统一账务</span>
+              <span class="layer-chip highlight">复式记账</span>
+              <span class="layer-chip highlight">清算中心</span>
+              <span class="layer-chip highlight">资金结算</span>
+              <span class="layer-chip highlight">对账中心</span>
+              <span class="layer-chip">日终轧账</span>
+              <span class="layer-chip">备付金管理</span>
+            </div>
+          </div>
+          <div class="arch-layer anim-layer-4">
+            <div class="layer-tag tag-risk">风控与反洗钱<br>合规层</div>
+            <div class="layer-body">
+              <span class="layer-chip highlight">实时风控引擎</span>
+              <span class="layer-chip highlight">AML 反洗钱</span>
+              <span class="layer-chip highlight">KYC 客户合规</span>
+              <span class="layer-chip highlight">监管报送</span>
+              <span class="layer-chip">OFAC 制裁筛查</span>
+              <span class="layer-chip">审计留痕</span>
+            </div>
+          </div>
+          <div class="arch-layer anim-layer-5">
+            <div class="layer-tag tag-support">支撑平台层</div>
+            <div class="layer-body">
+              <span class="layer-chip">客户账户管理</span>
+              <span class="layer-chip">签约协议</span>
+              <span class="layer-chip">权限审批</span>
+              <span class="layer-chip">费率计费引擎</span>
+              <span class="layer-chip">营销支付</span>
+              <span class="layer-chip">日终批处理</span>
+              <span class="layer-chip">监控告警</span>
+            </div>
+          </div>
+        </div>
+        <div class="corner-mark">LAYERED ARCHITECTURE</div>
+      </section>
+
+      <!-- ============ SLIDE 03 — 渠道接入网关层 ============ -->
+      <section class="slide s-section" data-screen-label="03 渠道接入网关层">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">LAYER 01</div>
+        <h2 class="sec-title anim-2">渠道接入网关层</h2>
+        <p class="sec-desc anim-3">统一入口 — 所有客户端、第三方、外联机构流量经此层进入，金融级限流、防刷、报文解析、路由</p>
+        <div class="module-grid">
+          <div class="module-card anim-4">
+            <div class="card-num">模块 1</div>
+            <div class="card-title">线上渠道网关</div>
+            <div class="card-items">手机银行 · 网上银行 · 小程序/APP 快捷支付网关</div>
+          </div>
+          <div class="module-card anim-4">
+            <div class="card-num">模块 2</div>
+            <div class="card-title">线下渠道网关</div>
+            <div class="card-items">POS 收单 · ATM 转账/取款 · 柜台柜面支付接口</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">模块 3</div>
+            <div class="card-title">外联合作网关</div>
+            <div class="card-items">银联对接 · 网联对接 · 第三方支付（支付宝/微信）前置</div>
+          </div>
+          <div class="module-card accent-gold anim-5">
+            <div class="card-num">模块 4 · 汇丰核心</div>
+            <div class="card-title">国际跨境网关</div>
+            <div class="card-items">SWIFT 报文收发 · 跨境清算前置 · 境外合作银行对接</div>
+          </div>
+          <div class="module-card anim-6" style="grid-column: 1 / -1;">
+            <div class="card-num">通用能力</div>
+            <div class="card-title">协议适配 (HTTP/HTTPS/ISO8583/SWIFT/FSB) · 流量控制 · 熔断降级 · 黑白名单 · 请求验签 · 防重放 · 幂等校验 · 统一日志跟踪</div>
+          </div>
+        </div>
+        <div class="corner-mark">GATEWAY LAYER</div>
+      </section>
+
+      <!-- ============ SLIDE 04 — 支付交易核心业务层 ============ -->
+      <section class="slide s-section" data-screen-label="04 交易核心业务层">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">LAYER 02</div>
+        <h2 class="sec-title anim-2">支付交易核心业务层</h2>
+        <p class="sec-desc anim-3">所有交易逻辑的核心 — 统一编排、正逆向交易、多币种、分布式事务补偿</p>
+        <div class="module-grid">
+          <div class="module-card anim-4">
+            <div class="card-num">核心引擎</div>
+            <div class="card-title">支付交易引擎</div>
+            <div class="card-items">统一编排 · 正向交易（转账/消费/充值/缴费/代扣/代付）· 逆向交易（退款/冲正/撤销/挂账/补账）· 幂等 · 状态机 · 分布式事务补偿 · 多币种（港币/美元/人民币/欧元）</div>
+          </div>
+          <div class="module-card anim-4">
+            <div class="card-num">B 端</div>
+            <div class="card-title">商户收单模块</div>
+            <div class="card-items">商户入驻 · 资质审核 · 阶梯费率 · 交易限额 · 风控等级 · 对账文件 · 资金冻结/解冻</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">C 端</div>
+            <div class="card-title">个人支付模块</div>
+            <div class="card-items">支付权限 · 快捷签约/解约 · 单笔/单日限额 · 密码/短信/生物识别校验</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">企业</div>
+            <div class="card-title">批量代付/代扣</div>
+            <div class="card-items">批量发薪 · 批量代扣 · 文件导入 · 分批处理 · 失败重试 · 结果回传</div>
+          </div>
+          <div class="module-card accent-gold anim-6" style="grid-column: 1 / -1;">
+            <div class="card-num">汇丰最强特色</div>
+            <div class="card-title">跨境支付模块</div>
+            <div class="card-items">跨境汇入/汇出 · 结售汇（外币兑换）· 跨境手续费/中转行费用 · 跨境申报 · 国别风险控制 · SWIFT MT103/MT202 报文生成解析</div>
+          </div>
+        </div>
+        <div class="corner-mark">TRANSACTION LAYER</div>
+      </section>
+
+      <!-- ============ SLIDE 05 — 资金与账务清算核心层 ============ -->
+      <section class="slide s-section" data-screen-label="05 资金账务清算层">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">LAYER 03</div>
+        <h2 class="sec-title anim-2">资金与账务清算核心层</h2>
+        <p class="sec-desc anim-3">银行支付与互联网支付的最大区别 — 复式记账、央行清算、对账零差错</p>
+        <div class="module-grid">
+          <div class="module-card anim-4">
+            <div class="card-num">核心金融资产</div>
+            <div class="card-title">全行统一账务模块</div>
+            <div class="card-items">分户账（客户账/内部账/机构账/手续费账）· 复式记账（金融强制）· 实时入账/挂账/暂收暂付 · 账务平衡校验 · 日终轧账</div>
+          </div>
+          <div class="module-card anim-4">
+            <div class="card-num">清算</div>
+            <div class="card-title">清算中心模块</div>
+            <div class="card-items">人行大额/小额/超级网银 · 银联清算 · 网联清算 · 跨境 SWIFT 清算 · 行内跨账户清算 · 批次管理</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">结算</div>
+            <div class="card-title">资金结算模块</div>
+            <div class="card-items">T+0 / T+1 / D+N 结算配置 · 商户/企业/跨境结算 · 手续费/罚息/汇率差 · 备付金管理（合规必备）</div>
+          </div>
+          <div class="module-card accent-green anim-5">
+            <div class="card-num">零差错</div>
+            <div class="card-title">对账中心模块</div>
+            <div class="card-items">渠道对账（银联/网联/SWIFT）· 行内账务对账 · 商户对账 · 长短款差错处理 · 差异自动修复/人工复核</div>
+          </div>
+        </div>
+        <div class="corner-mark">CORE LEDGER & SETTLEMENT</div>
+      </section>
+
+      <!-- ============ SLIDE 06 — 风控与反洗钱合规层 ============ -->
+      <section class="slide s-section" data-screen-label="06 风控合规层">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">LAYER 04</div>
+        <h2 class="sec-title anim-2">风控与反洗钱合规层</h2>
+        <p class="sec-desc anim-3">汇丰最重、监管最强 — 实时风控 + AML + KYC + 监管报送，银行强制合规</p>
+        <div class="module-grid">
+          <div class="module-card accent-red anim-4">
+            <div class="card-num">实时</div>
+            <div class="card-title">实时风控引擎</div>
+            <div class="card-items">交易风险评分 · 异地/异设备/大额/深夜风控 · 频次限流/速度风控 · 黑白名单 · 敏感商户/账户拦截</div>
+          </div>
+          <div class="module-card accent-red anim-4">
+            <div class="card-num">银行强制</div>
+            <div class="card-title">AML 反洗钱模块</div>
+            <div class="card-items">大额交易监控 · 可疑交易识别 · 客户风险等级分层 · 交易穿透分析 · OFAC 制裁名单筛查</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">合规</div>
+            <div class="card-title">KYC 客户合规模块</div>
+            <div class="card-items">个人/企业实名核验 · 准入/禁入名单 · 证件有效期 · 客户等级管理 · 尽职调查记录</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">报送</div>
+            <div class="card-title">监管报送模块</div>
+            <div class="card-items">人行支付监管报送 · 反洗钱监管报送 · 跨境外汇监管报送 · 审计留痕 · 合规台账</div>
+          </div>
+        </div>
+        <div class="corner-mark">RISK & COMPLIANCE</div>
+      </section>
+
+      <!-- ============ SLIDE 07 — 支撑平台层 ============ -->
+      <section class="slide s-section" data-screen-label="07 支撑平台层">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">LAYER 05</div>
+        <h2 class="sec-title anim-2">支撑平台层</h2>
+        <p class="sec-desc anim-3">用户体系 · 权限审批 · 费率计费 · 批处理 · 运维监控 — 全行基础设施</p>
+        <div class="module-grid">
+          <div class="module-card anim-4">
+            <div class="card-num">账户</div>
+            <div class="card-title">客户账户管理</div>
+            <div class="card-items">借记卡/信用卡/对公账户 · 状态管理：正常/冻结/挂失/止付</div>
+          </div>
+          <div class="module-card anim-4">
+            <div class="card-num">协议</div>
+            <div class="card-title">签约协议模块</div>
+            <div class="card-items">快捷支付协议 · 代扣协议 · 自动续费协议</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">权限</div>
+            <div class="card-title">权限与操作员模块</div>
+            <div class="card-items">行员权限 · 分级审批 · 大额双人复核 · 全审计操作日志</div>
+          </div>
+          <div class="module-card anim-5">
+            <div class="card-num">计费</div>
+            <div class="card-title">费率计费引擎</div>
+            <div class="card-items">转账/跨境手续费 · 商户阶梯费率 · 优惠减免 · 立减/折扣/补贴 · 红包/优惠券 · 计费冲抵</div>
+          </div>
+          <div class="module-card anim-6" style="grid-column: 1 / -1;">
+            <div class="card-num">运维</div>
+            <div class="card-title">日终批处理 · 交易日志审计 · 数据统计报表 · 系统监控告警 · 参数配置中心（费率/限额/风控阈值/渠道参数统一配置）</div>
+          </div>
+        </div>
+        <div class="corner-mark">SUPPORT PLATFORM</div>
+      </section>
+
+      <!-- ============ SLIDE 08 — 完整架构总览图 ============ -->
+      <section class="slide s-arch" data-screen-label="08 架构总览图">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">FULL ARCHITECTURE MAP</div>
+        <h2 class="sec-title anim-2">完整架构层级 — 可直接画架构图</h2>
+        <p class="sec-desc anim-3">五层协同，从外联接入到监管报送全覆盖</p>
+        <div class="arch-overview">
+          <div class="ao-row anim-layer-1">
+            <div class="ao-block ao-gateway">
+              <div class="ao-title">① 渠道接入层</div>
+              <div class="ao-subs">网关 · 外联 · 报文 · SWIFT · 银联/网联 · 支付宝/微信前置 · 协议适配 · 限流熔断</div>
+            </div>
+          </div>
+          <div class="ao-row anim-layer-2">
+            <div class="ao-block ao-business">
+              <div class="ao-title">② 交易业务层</div>
+              <div class="ao-subs">支付引擎 · 商户收单 · 个人支付 · 批量代付代扣 · 跨境支付 · 多币种 · 分布式事务</div>
+            </div>
+          </div>
+          <div class="ao-row anim-layer-3">
+            <div class="ao-block ao-core" style="flex:2;">
+              <div class="ao-title">③ 资金核心层</div>
+              <div class="ao-subs">全行统一账务 · 复式记账 · 清算中心（人行/银联/网联/SWIFT）· 资金结算 · 对账中心 · 日终轧账 · 备付金管理</div>
+            </div>
+            <div class="ao-block ao-risk" style="flex:1;">
+              <div class="ao-title">④ 风控合规层</div>
+              <div class="ao-subs">实时风控 · AML · KYC · OFAC · 监管报送 · 审计留痕</div>
+            </div>
+          </div>
+          <div class="ao-row anim-layer-5">
+            <div class="ao-block ao-support">
+              <div class="ao-title">⑤ 支撑平台层</div>
+              <div class="ao-subs">用户账户 · 签约协议 · 权限审批 · 费率计费 · 营销支付 · 日终批处理 · 监控告警 · 参数配置中心</div>
+            </div>
+          </div>
+        </div>
+        <div class="corner-mark">END-TO-END ARCHITECTURE</div>
+      </section>
+
+      <!-- ============ SLIDE 09 — 与互联网支付核心差异 ============ -->
+      <section class="slide s-compare" data-screen-label="09 核心差异">
+        <div class="top-stripe"></div>
+        <div class="sec-num anim-1">KEY DIFFERENTIATORS</div>
+        <h2 class="sec-title anim-2">与普通互联网支付系统的核心差异</h2>
+        <p class="sec-desc anim-3">汇丰银行级支付系统必须满足的六大金融级要求</p>
+        <table class="compare-table anim-4">
+          <thead>
+            <tr><th style="width:60px;">#</th><th style="width:340px;">差异维度</th><th>银行支付系统要求</th><th style="width:280px;">普通互联网支付</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="check-mark">1</span></td>
+              <td class="col-label">账务模型</td>
+              <td>复式记账 · 金融账务 · 总分平衡 · 日终轧账</td>
+              <td>简单流水记录</td>
+            </tr>
+            <tr>
+              <td><span class="check-mark">2</span></td>
+              <td class="col-label">外联清算</td>
+              <td>央行 · 银联 · 网联 · SWIFT · 跨境清算</td>
+              <td>第三方支付通道为主</td>
+            </tr>
+            <tr>
+              <td><span class="check-mark">3</span></td>
+              <td class="col-label">合规安全</td>
+              <td>强 AML 反洗钱 · OFAC 制裁筛查 · KYC 实名</td>
+              <td>基础实名 + 风控</td>
+            </tr>
+            <tr>
+              <td><span class="check-mark">4</span></td>
+              <td class="col-label">币种支持</td>
+              <td>多币种 · 跨境清算 · 结售汇 · 汇率差管理</td>
+              <td>以单币种为主</td>
+            </tr>
+            <tr>
+              <td><span class="check-mark">5</span></td>
+              <td class="col-label">监管审计</td>
+              <td>监管报送 · 强审计 · 不可篡改日志 · 合规台账</td>
+              <td>基本日志记录</td>
+            </tr>
+            <tr>
+              <td><span class="check-mark">6</span></td>
+              <td class="col-label">一致性保障</td>
+              <td>金融级一致性 · 分布式事务补偿 · 对账零差错</td>
+              <td>最终一致性为主</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="corner-mark">BANK-GRADE vs INTERNET PAYMENT</div>
+      </section>
+
+      <!-- ============ SLIDE 10 — 结束页 ============ -->
+      <section class="slide s-end" data-screen-label="10 结束页">
+        <div class="top-stripe"></div>
+        <div class="end-icon anim-1">🏦</div>
+        <h2 class="end-title anim-2">谢谢观看</h2>
+        <p class="end-sub anim-3">汇丰级银行支付系统 · 完整架构模块 · 金融级四层架构</p>
+        <p class="cover-sub anim-4" style="margin-top:20px; font-size:18px; color:#999;">
+          接入网关层 → 交易业务层 → 核心账务清算层 → 风控合规层 → 支撑平台层
+        </p>
+        <div class="cover-line anim-5"></div>
+        <div class="corner-mark">END</div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Framework chrome — DO NOT EDIT below this line. -->
+  <nav class="deck-counter" role="navigation" aria-label="Deck navigation">
+    <button type="button" id="deck-prev" aria-label="Previous slide">‹</button>
+    <span class="deck-count"><span id="deck-cur">01</span> <span class="total">/ <span id="deck-total">01</span></span></span>
+    <button type="button" id="deck-next" aria-label="Next slide">›</button>
+  </nav>
+  <div class="deck-hint">← / → · space</div>
+
+  <script>
+    (function () {
+      var stage = document.getElementById('deck-stage');
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+      var prev = document.getElementById('deck-prev');
+      var next = document.getElementById('deck-next');
+      var cur = document.getElementById('deck-cur');
+      var total = document.getElementById('deck-total');
+      var STORE = 'deck:idx:' + (location.pathname || '/');
+      var idx = 0;
+
+      function fit() {
+        var sw = window.innerWidth;
+        var sh = window.innerHeight;
+        var pad = 32;
+        var s = Math.min((sw - pad) / 1920, (sh - pad) / 1080);
+        if (!isFinite(s) || s <= 0) s = 1;
+        var tx = (sw - 1920 * s) / 2;
+        var ty = (sh - 1080 * s) / 2;
+        stage.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+      }
+
+      function pad2(n) { return (n < 10 ? '0' : '') + n; }
+      function paint() {
+        slides.forEach(function (el, i) { el.classList.toggle('active', i === idx); });
+        if (cur) cur.textContent = pad2(idx + 1);
+        if (total) total.textContent = pad2(slides.length);
+        if (prev) prev.toggleAttribute('disabled', idx <= 0);
+        if (next) next.toggleAttribute('disabled', idx >= slides.length - 1);
+      }
+      function go(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        paint();
+        try { localStorage.setItem(STORE, String(idx)); } catch (_) {}
+      }
+      function onKey(e) {
+        var t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(idx + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+      }
+      window.addEventListener('keydown', onKey, true);
+      document.addEventListener('keydown', onKey, true);
+      if (prev) prev.addEventListener('click', function () { go(idx - 1); });
+      if (next) next.addEventListener('click', function () { go(idx + 1); });
+
+      document.body.setAttribute('tabindex', '-1');
+      document.body.style.outline = 'none';
+      function focusDeck() { try { window.focus(); document.body.focus({ preventScroll: true }); } catch (_) {} }
+      document.addEventListener('mousedown', focusDeck);
+      window.addEventListener('load', focusDeck);
+
+      try {
+        var saved = parseInt(localStorage.getItem(STORE) || '0', 10);
+        if (!isNaN(saved) && saved >= 0 && saved < slides.length) idx = saved;
+      } catch (_) {}
+
+      window.addEventListener('resize', fit);
+      fit();
+      paint();
+      focusDeck();
+    })();
+  </script>
+</body>
+</html>
